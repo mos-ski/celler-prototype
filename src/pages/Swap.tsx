@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { COINS, getCoin, coinToUsd, usdToCoin, usdToNgn, formatUsd, formatCoin, store, genId, type CoinId } from "@/lib/crypto";
-import { X, ChevronDown, ArrowRight, ArrowDownUp, CheckCircle, Circle } from "lucide-react";
+import { X, ChevronDown, ArrowRight, ArrowDownUp } from "lucide-react";
+import TransactionTimeline from "@/components/TransactionTimeline";
 import { CoinIcon } from "./Dashboard";
 import { useNavigate } from "react-router-dom";
 
@@ -127,14 +128,14 @@ export default function SwapPage() {
         <h2 className="text-xl font-bold mt-6 text-center">Swap Successful!</h2>
         <p className="text-muted-foreground mt-1">{formatCoin(qty)} {fromCoin} → {formatCoin(toQty)} {toCoin}</p>
 
-        <div className="flex items-center gap-0 mt-8 w-full max-w-xs">
-          {["Order Received", "Order Accepted", "Swap Completed"].map((label, i) => (
-            <div key={label} className="flex-1 flex flex-col items-center">
-              <CheckCircle size={24} className="text-success" />
-              <p className="text-[10px] text-muted-foreground mt-1 text-center leading-tight">{label}</p>
-            </div>
-          ))}
-        </div>
+        <TransactionTimeline
+          steps={[
+            { label: "Order Received" },
+            { label: "Order Accepted" },
+            { label: "Swap Completed" },
+          ]}
+          durationMs={4000}
+        />
 
         <div className="w-full mt-10 space-y-4">
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">

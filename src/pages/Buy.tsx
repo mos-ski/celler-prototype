@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { COINS, getCoin, ngnToUsd, usdToCoin, usdToNgn, formatUsd, formatNgn, formatCoin, store, genId, type CoinId } from "@/lib/crypto";
-import { X, ChevronDown, ArrowRight, CheckCircle, Circle } from "lucide-react";
+import { X, ChevronDown, ArrowRight } from "lucide-react";
+import TransactionTimeline from "@/components/TransactionTimeline";
 import { CoinIcon } from "./Dashboard";
 import { useNavigate } from "react-router-dom";
 
@@ -108,15 +109,14 @@ export default function BuyPage() {
           Order Placed! —<br />Your {formatUsd(usdVal)} {coinId} trade has received.
         </h2>
 
-        <div className="flex items-center gap-0 mt-8 w-full max-w-xs">
-          {["Order Received", "Order Accepted", "Payment Processed"].map((label, i) => (
-            <div key={label} className="flex-1 flex flex-col items-center">
-              {i === 0 ? <CheckCircle size={24} className="text-success" /> : <Circle size={24} className="text-muted-foreground" />}
-              <p className="text-[10px] text-muted-foreground mt-1 text-center leading-tight">{label}</p>
-              <p className="text-[9px] text-muted-foreground">{ts}</p>
-            </div>
-          ))}
-        </div>
+        <TransactionTimeline
+          steps={[
+            { label: "Order Received", sublabel: ts },
+            { label: "Order Accepted", sublabel: ts },
+            { label: "Payment Processed", sublabel: ts },
+          ]}
+          durationMs={4000}
+        />
 
         <div className="w-full mt-10 space-y-4">
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
