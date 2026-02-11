@@ -4,7 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import AppLayout from "@/components/AppLayout";
+import Splash from "./pages/Splash";
+import Welcome from "./pages/Welcome";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
@@ -24,30 +27,33 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route element={<AppLayout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/buy" element={<Buy />} />
-              <Route path="/sell" element={<Sell />} />
-              <Route path="/swap" element={<Swap />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/coin/:coinId" element={<CoinDetail />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/withdraw/:coinId" element={<Withdraw />} />
-              <Route path="/receive/:coinId" element={<Receive />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
+      <ThemeProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Splash />} />
+              <Route path="/welcome" element={<Welcome />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/buy" element={<Buy />} />
+                <Route path="/sell" element={<Sell />} />
+                <Route path="/swap" element={<Swap />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/coin/:coinId" element={<CoinDetail />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/withdraw/:coinId" element={<Withdraw />} />
+                <Route path="/receive/:coinId" element={<Receive />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

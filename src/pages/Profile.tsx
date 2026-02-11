@@ -1,10 +1,12 @@
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { LogOut, ChevronRight, User, Landmark, Bell, FileText, Lock, Grid3X3, Shield, Palette, Gift, HelpCircle, Copy } from "lucide-react";
+import { LogOut, ChevronRight, User, Landmark, Bell, FileText, Lock, Grid3X3, Shield, Sun, Moon, Gift, HelpCircle, Copy } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => { logout(); navigate("/signin"); };
@@ -23,7 +25,7 @@ export default function ProfilePage() {
   ];
 
   const otherItems = [
-    { icon: Palette, label: "Appearance" },
+    { icon: theme === "dark" ? Moon : Sun, label: "Appearance", onClick: toggleTheme, right: <span className="text-xs bg-secondary text-muted-foreground px-2 py-0.5 rounded capitalize">{theme}</span> },
     { icon: Gift, label: "Refer and Earn" },
     { icon: HelpCircle, label: "Support" },
   ];
