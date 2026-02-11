@@ -44,7 +44,7 @@ export default function BuyPage() {
           </button>
         </div>
         <div className="space-y-1">
-          {COINS.map((c) => (
+          {COINS.filter(c => c.id !== "NGN").map((c) => (
             <button key={c.id} onClick={() => { setCoinId(c.id); setAmount("0"); setStep("amount"); }}
               className="w-full flex items-center justify-between py-4 px-3 rounded-xl hover:bg-secondary/50 transition-colors">
               <div className="flex items-center gap-3">
@@ -79,17 +79,34 @@ export default function BuyPage() {
         </div>
 
         <div className="bg-card rounded-t-3xl p-6 space-y-4 border-t border-border/30">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-2">Order Summary</h3>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Amount (USD)</span>
+            <span className="font-medium">{formatUsd(usdVal)}</span>
+          </div>
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
             <span className="text-muted-foreground">Exchange Rate</span>
             <span className="font-medium">₦1,410/$</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Amount (NGN)</span>
+            <span className="font-medium">{formatNgn(ngnVal)}</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Coin Price</span>
+            <span className="font-medium">{formatUsd(coin.marketPriceUsd)}</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">You Receive</span>
+            <span className="font-medium">{formatCoin(qty)} {coinId}</span>
           </div>
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
             <span className="text-muted-foreground">Coin</span>
             <span className="font-medium">{coin.name} ({coinId})</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Fee:</span>
-            <span className="font-medium">$0.01</span>
+            <span className="text-muted-foreground">Trading Fee</span>
+            <span className="font-medium text-success">Free</span>
           </div>
           <Button className="w-full h-14 rounded-2xl text-base font-semibold gap-2" onClick={confirm} disabled={usdVal <= 0}>
             Confirm <ArrowRight size={18} />
@@ -106,7 +123,7 @@ export default function BuyPage() {
       <div className="min-h-screen bg-background flex flex-col items-center pt-20 px-4">
         <CoinIcon coinId={coinId} />
         <h2 className="text-xl font-bold mt-6 text-center">
-          Order Placed! —<br />Your {formatUsd(usdVal)} {coinId} trade has received.
+          Order Placed! —<br />Your {formatUsd(usdVal)} {coinId} trade has been received.
         </h2>
 
         <TransactionTimeline
@@ -120,20 +137,24 @@ export default function BuyPage() {
 
         <div className="w-full mt-10 space-y-4">
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
-            <span className="text-muted-foreground">Set Rate</span>
+            <span className="text-muted-foreground">Amount Paid</span>
+            <span className="font-medium">{formatNgn(ngnVal)}</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Exchange Rate</span>
             <span className="font-medium">₦1,410/$</span>
           </div>
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
-            <span className="text-muted-foreground">Coin</span>
-            <span className="font-medium">{coin.name}</span>
-          </div>
-          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
-            <span className="text-muted-foreground">Estimated Value</span>
+            <span className="text-muted-foreground">Coin Received</span>
             <span className="font-medium">{formatCoin(qty)} {coinId}</span>
           </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">USD Value</span>
+            <span className="font-medium">{formatUsd(usdVal)}</span>
+          </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Fee:</span>
-            <span className="font-medium">$0.01</span>
+            <span className="text-muted-foreground">Trading Fee</span>
+            <span className="font-medium text-success">Free</span>
           </div>
         </div>
 
@@ -169,7 +190,7 @@ export default function BuyPage() {
           </button>
         </div>
         <p className="text-sm text-muted-foreground mt-2">
-          ₦ {ngnVal.toLocaleString("en-NG", { minimumFractionDigits: 2 })} <span className="bg-secondary text-[10px] px-2 py-0.5 rounded ml-1">NGN</span>
+          ≈ {formatCoin(qty, 6)} {coinId} · {formatNgn(ngnVal)}
         </p>
       </div>
 
