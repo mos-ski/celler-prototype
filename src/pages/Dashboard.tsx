@@ -1,12 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { store, COINS, coinToUsd, usdToNgn, formatUsd, formatNgn, formatCoin, type Transaction } from "@/lib/crypto";
+import { store, COINS, coinToUsd, usdToNgn, formatUsd, formatNgn, formatCoin, type CoinId } from "@/lib/crypto";
 import { Plus, Minus, ArrowDown, ArrowUp, Gift, Bell } from "lucide-react";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const wallet = store.getWallet();
-  const transactions = store.getTransactions().slice(0, 5);
 
   let totalUsd = 0;
   COINS.forEach((c) => { totalUsd += coinToUsd(c.id, wallet[c.id] || 0); });
@@ -22,8 +22,9 @@ export default function Dashboard() {
           <span className="text-base font-medium">Hello, {user?.fullName?.split(" ")[0] ?? "Trader"}</span>
         </div>
         <div className="flex items-center gap-2">
-          <button className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground">
+          <button onClick={() => navigate("/notifications")} className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground relative">
             <Bell size={18} />
+            <div className="absolute top-2 right-2 h-2 w-2 rounded-full bg-destructive" />
           </button>
           <Link to="/buy" className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
             <Plus size={18} className="text-primary-foreground" />
@@ -46,8 +47,8 @@ export default function Dashboard() {
         {[
           { icon: Plus, label: "Buy", to: "/buy" },
           { icon: Minus, label: "Sell", to: "/sell" },
-          { icon: ArrowDown, label: "Deposit", to: "/buy" },
-          { icon: ArrowUp, label: "Withdraw", to: "/sell" },
+          { icon: ArrowDown, label: "Deposit", to: "/receive/USDT" },
+          { icon: ArrowUp, label: "Withdraw", to: "/withdraw/USDT" },
           { icon: Gift, label: "Earn", to: "/dashboard", accent: true },
         ].map((a) => (
           <Link key={a.label} to={a.to} className="flex flex-col items-center gap-2">
@@ -68,13 +69,17 @@ export default function Dashboard() {
         <span className="text-3xl">🪙</span>
       </div>
 
-      {/* Coin List */}
+      {/* Coin List - Clickable */}
       <div className="space-y-1">
         {COINS.map((c) => {
           const qty = wallet[c.id] || 0;
           const usd = coinToUsd(c.id, qty);
           return (
-            <div key={c.id} className="flex items-center justify-between py-4 border-b border-border/30 last:border-0">
+            <button
+              key={c.id}
+              onClick={() => navigate(`/coin/${c.id}`)}
+              className="w-full flex items-center justify-between py-4 border-b border-border/30 last:border-0 text-left hover:bg-secondary/30 rounded-xl px-2 transition-colors"
+            >
               <div className="flex items-center gap-3">
                 <CoinIcon coinId={c.id} />
                 <div>
@@ -92,7 +97,7 @@ export default function Dashboard() {
                 <p className="text-sm font-semibold">{formatCoin(qty, 7)}</p>
                 <p className="text-xs text-muted-foreground">{formatUsd(usd)}</p>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

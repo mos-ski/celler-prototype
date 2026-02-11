@@ -13,6 +13,10 @@ import Sell from "./pages/Sell";
 import Swap from "./pages/Swap";
 import History from "./pages/History";
 import Profile from "./pages/Profile";
+import CoinDetail from "./pages/CoinDetail";
+import Notifications from "./pages/Notifications";
+import Withdraw from "./pages/Withdraw";
+import Receive from "./pages/Receive";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +39,10 @@ const App = () => (
               <Route path="/swap" element={<Swap />} />
               <Route path="/history" element={<History />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/coin/:coinId" element={<CoinDetail />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/withdraw/:coinId" element={<Withdraw />} />
+              <Route path="/receive/:coinId" element={<Receive />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
