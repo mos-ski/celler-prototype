@@ -1,7 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { LogOut, ChevronRight, User, CreditCard, Shield, HelpCircle } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -9,37 +9,45 @@ export default function ProfilePage() {
 
   const handleLogout = () => { logout(); navigate("/signin"); };
 
+  const items = [
+    { icon: User, label: "Account Info", sub: user?.email || "" },
+    { icon: CreditCard, label: "Bank Account", sub: "First Bank · ****6789" },
+    { icon: Shield, label: "Security", sub: "Password, 2FA" },
+    { icon: HelpCircle, label: "Help & Support", sub: "FAQ, Contact us" },
+  ];
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Profile</h1>
+    <div className="pt-4">
+      {/* Avatar & name */}
+      <div className="flex flex-col items-center mb-8">
+        <div className="h-20 w-20 rounded-full bg-secondary flex items-center justify-center text-3xl font-bold mb-3">
+          {user?.fullName?.[0]?.toUpperCase() ?? "T"}
+        </div>
+        <p className="text-lg font-semibold">{user?.fullName || "Trader"}</p>
+        <p className="text-sm text-muted-foreground">{user?.email || ""}</p>
+      </div>
 
-      <Card className="border-border/40">
-        <CardHeader><CardTitle className="text-base">Account Info</CardTitle></CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <Row label="Name" value={user?.fullName || "—"} />
-          <Row label="Email" value={user?.email || "—"} />
-        </CardContent>
-      </Card>
+      {/* Menu items */}
+      <div className="space-y-1">
+        {items.map((item) => (
+          <button key={item.label} className="w-full flex items-center justify-between py-4 px-2 border-b border-border/20 last:border-0">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center">
+                <item.icon size={18} className="text-muted-foreground" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-medium">{item.label}</p>
+                <p className="text-xs text-muted-foreground">{item.sub}</p>
+              </div>
+            </div>
+            <ChevronRight size={18} className="text-muted-foreground" />
+          </button>
+        ))}
+      </div>
 
-      <Card className="border-border/40">
-        <CardHeader><CardTitle className="text-base">Bank Account (Mock)</CardTitle></CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <Row label="Bank" value="First Bank of Nigeria" />
-          <Row label="Account Number" value="0123456789" />
-          <Row label="Account Name" value={user?.fullName || "—"} />
-        </CardContent>
-      </Card>
-
-      <Button variant="destructive" className="w-full" onClick={handleLogout}>Logout</Button>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
+      <Button variant="destructive" className="w-full mt-8 h-12 rounded-2xl" onClick={handleLogout}>
+        <LogOut size={16} className="mr-2" /> Logout
+      </Button>
     </div>
   );
 }

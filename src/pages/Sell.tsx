@@ -1,142 +1,210 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { COINS, getCoin, coinToUsd, usdToNgn, usdToCoin, ngnToUsd, formatUsd, formatNgn, formatCoin, store, genId, type CoinId } from "@/lib/crypto";
-import { ArrowLeft, Check } from "lucide-react";
+import { COINS, getCoin, coinToUsd, usdToNgn, formatUsd, formatNgn, formatCoin, store, genId, type CoinId } from "@/lib/crypto";
+import { X, ChevronDown, ArrowRight, CheckCircle, Circle } from "lucide-react";
+import { CoinIcon } from "./Dashboard";
+import { useNavigate } from "react-router-dom";
 
-type Step = "select" | "amount" | "review" | "success";
+type Step = "amount" | "select-coin" | "review" | "success";
 
 export default function SellPage() {
-  const [step, setStep] = useState<Step>("select");
-  const [coinId, setCoinId] = useState<CoinId>("BTC");
-  const [qtyInput, setQtyInput] = useState("");
-  const [ngnInput, setNgnInput] = useState("");
+  const navigate = useNavigate();
+  const [step, setStep] = useState<Step>("amount");
+  const [coinId, setCoinId] = useState<CoinId>("USDT");
+  const [amount, setAmount] = useState("0");
   const wallet = store.getWallet();
 
   const coin = getCoin(coinId);
   const balance = wallet[coinId] || 0;
+  const qty = parseFloat(amount) || 0;
+  const usdValue = coinToUsd(coinId, qty);
+  const ngnValue = usdToNgn(usdValue);
 
-  const qtyVal = parseFloat(qtyInput) || 0;
-  const ngnVal = parseFloat(ngnInput) || 0;
-
-  const activeQty = qtyInput ? Math.min(qtyVal, balance) : usdToCoin(coinId, ngnToUsd(ngnVal));
-  const activeUsd = coinToUsd(coinId, activeQty);
-  const activeNgn = qtyInput ? usdToNgn(activeUsd) : ngnVal;
-
-  const handleQtyChange = (v: string) => { setQtyInput(v); setNgnInput(""); };
-  const handleNgnChange = (v: string) => { setNgnInput(v); setQtyInput(""); };
+  const handleDigit = (d: string) => {
+    setAmount((prev) => {
+      if (d === "." && prev.includes(".")) return prev;
+      if (prev === "0" && d !== ".") return d;
+      return prev + d;
+    });
+  };
+  const handleDelete = () => setAmount((prev) => prev.length <= 1 ? "0" : prev.slice(0, -1));
+  const useMax = () => setAmount(String(balance));
 
   const confirm = () => {
-    store.updateWalletCoin(coinId, -activeQty);
-    store.addTransaction({ id: genId(), type: "sell", coin: coinId, quantity: activeQty, usdValue: activeUsd, ngnValue: usdToNgn(activeUsd), date: new Date().toISOString(), status: "completed" });
+    store.updateWalletCoin(coinId, -qty);
+    store.addTransaction({ id: genId(), type: "sell", coin: coinId, quantity: qty, usdValue, ngnValue, date: new Date().toISOString(), status: "completed" });
     setStep("success");
   };
 
-  if (step === "select") {
-    const available = COINS.filter((c) => (wallet[c.id] || 0) > 0);
+  if (step === "select-coin") {
     return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-bold">Sell Crypto</h1>
-        <p className="text-sm text-muted-foreground">Select coin to sell</p>
-        {available.length === 0 ? <p className="text-sm text-muted-foreground">No coins in wallet.</p> : (
-          <div className="grid gap-2">
-            {available.map((c) => (
-              <Card key={c.id} className="cursor-pointer border-border/40 hover:border-primary/50 transition-colors" onClick={() => { setCoinId(c.id); setStep("amount"); }}>
-                <CardContent className="flex items-center justify-between py-3 px-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{c.icon}</span>
-                    <div><p className="font-medium">{c.name}</p><p className="text-xs text-muted-foreground">Balance: {formatCoin(wallet[c.id] || 0)} {c.id}</p></div>
-                  </div>
-                  <p className="text-sm font-medium">{formatUsd(c.marketPriceUsd)}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  if (step === "amount") {
-    return (
-      <div className="space-y-4">
-        <button onClick={() => setStep("select")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft size={16} /> Back</button>
-        <h1 className="text-2xl font-bold">Sell {coin.name}</h1>
-        <p className="text-xs text-muted-foreground">Balance: {formatCoin(balance)} {coinId} · Price: {formatUsd(coin.marketPriceUsd)}</p>
-
-        <div className="space-y-3">
-          <div className="space-y-2">
-            <Label>Quantity ({coinId})</Label>
-            <Input type="number" placeholder="0.00" value={qtyInput} onChange={(e) => handleQtyChange(e.target.value)} />
-            <button className="text-xs text-primary hover:underline" onClick={() => handleQtyChange(String(balance))}>Max: {formatCoin(balance)}</button>
-          </div>
-          <p className="text-center text-xs text-muted-foreground">— OR —</p>
-          <div className="space-y-2">
-            <Label>Target NGN amount</Label>
-            <Input type="number" placeholder="0.00" value={ngnInput} onChange={(e) => handleNgnChange(e.target.value)} />
-          </div>
+      <div className="min-h-screen bg-background pt-4">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold">Select Coin</h2>
+          <button onClick={() => setStep("amount")} className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
+            <X size={18} />
+          </button>
         </div>
-
-        {activeQty > 0 && (
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="py-3 text-sm space-y-1">
-              <p>You sell: <strong>{formatCoin(activeQty)} {coinId}</strong></p>
-              <p>USD value: <strong>{formatUsd(activeUsd)}</strong></p>
-              <p>You receive: <strong>{formatNgn(usdToNgn(activeUsd))}</strong></p>
-            </CardContent>
-          </Card>
-        )}
-
-        <Button className="w-full" disabled={activeQty <= 0 || activeQty > balance} onClick={() => setStep("review")}>Continue</Button>
+        <div className="space-y-1">
+          {COINS.filter((c) => (wallet[c.id] || 0) > 0).map((c) => (
+            <button key={c.id} onClick={() => { setCoinId(c.id); setAmount("0"); setStep("amount"); }}
+              className="w-full flex items-center justify-between py-4 px-3 rounded-xl hover:bg-secondary/50 transition-colors">
+              <div className="flex items-center gap-3">
+                <CoinIcon coinId={c.id} />
+                <div className="text-left">
+                  <p className="font-medium">{c.name}</p>
+                  <p className="text-xs text-muted-foreground">{c.id}</p>
+                </div>
+              </div>
+              <ChevronDown size={18} className="text-muted-foreground rotate-[-90deg]" />
+            </button>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (step === "review") {
     return (
-      <div className="space-y-4">
-        <button onClick={() => setStep("amount")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft size={16} /> Back</button>
-        <h1 className="text-2xl font-bold">Confirm Sale</h1>
-        <Card className="border-primary/20">
-          <CardContent className="py-4 space-y-2 text-sm">
-            <Row label="Selling" value={`${formatCoin(activeQty)} ${coinId}`} />
-            <Row label="Market Price" value={formatUsd(coin.marketPriceUsd)} />
-            <Row label="USD Value" value={formatUsd(activeUsd)} />
-            <Row label="Exchange Rate" value="₦1,410/$1" />
-            <div className="border-t pt-2 mt-2"><Row label="NGN Payout" value={formatNgn(usdToNgn(activeUsd))} highlight /></div>
-          </CardContent>
-        </Card>
-        <Button className="w-full" onClick={confirm}>Confirm Sale</Button>
+      <div className="min-h-screen bg-background flex flex-col">
+        <div className="flex items-center justify-between pt-4 mb-4">
+          <span className="text-base font-semibold">Sell Crypto</span>
+          <button onClick={() => setStep("amount")} className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-2">
+          <CoinIcon coinId={coinId} />
+          <p className="text-5xl font-bold mt-4">{formatCoin(qty)}</p>
+          <p className="text-muted-foreground">{formatNgn(ngnValue)}</p>
+        </div>
+
+        <div className="bg-card rounded-t-3xl p-6 space-y-4 border-t border-border/30">
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Exchange Rate</span>
+            <span className="font-medium">₦1,410/$</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">To:</span>
+            <span className="font-medium">NGN wallet</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Fee:</span>
+            <span className="font-medium">$0.01</span>
+          </div>
+          <Button className="w-full h-14 rounded-2xl text-base font-semibold gap-2" onClick={confirm} disabled={qty <= 0 || qty > balance}>
+            Confirm <ArrowRight size={18} />
+          </Button>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4 py-12">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/20"><Check size={32} className="text-success" /></div>
-      <h1 className="text-2xl font-bold">Sale Successful!</h1>
-      <Card className="w-full border-border/40">
-        <CardContent className="py-4 space-y-1 text-sm">
-          <Row label="Sold" value={`${formatCoin(activeQty)} ${coinId}`} />
-          <Row label="Received" value={formatNgn(usdToNgn(activeUsd))} />
-          <Row label="Date" value={new Date().toLocaleString()} />
-        </CardContent>
-      </Card>
-      <div className="flex gap-3 w-full">
-        <Button variant="outline" className="flex-1" onClick={() => { setStep("select"); setQtyInput(""); setNgnInput(""); }}>Sell More</Button>
-        <Button className="flex-1" asChild><a href="/dashboard">Dashboard</a></Button>
-      </div>
-    </div>
-  );
-}
+  if (step === "success") {
+    const now = new Date();
+    const ts = now.toLocaleDateString() + " " + now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center pt-20 px-4">
+        <CoinIcon coinId={coinId} />
+        <h2 className="text-xl font-bold mt-6 text-center">
+          Order Placed! —<br />Your ${formatCoin(qty)} {coinId} trade has received.
+        </h2>
 
-function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+        {/* Progress stepper */}
+        <div className="flex items-center gap-0 mt-8 w-full max-w-xs">
+          {["Order Received", "Order Accepted", "Payment Processed"].map((label, i) => (
+            <div key={label} className="flex-1 flex flex-col items-center">
+              {i === 0 ? <CheckCircle size={24} className="text-success" /> : <Circle size={24} className="text-muted-foreground" />}
+              <p className="text-[10px] text-muted-foreground mt-1 text-center leading-tight">{label}</p>
+              <p className="text-[9px] text-muted-foreground">{ts}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="w-full mt-10 space-y-4">
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Set Rate</span>
+            <span className="font-medium">₦1,410/$</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">To:</span>
+            <span className="font-medium">NGN wallet</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Estimated Value</span>
+            <span className="font-medium">{formatNgn(ngnValue)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Fee:</span>
+            <span className="font-medium">$0.01</span>
+          </div>
+        </div>
+
+        <div className="mt-auto w-full pb-8 pt-8">
+          <Button className="w-full h-14 rounded-2xl text-base font-semibold gap-2" onClick={() => navigate("/dashboard")}>
+            Go Home <ArrowRight size={18} />
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Amount entry (default)
   return (
-    <div className="flex justify-between">
-      <span className="text-muted-foreground">{label}</span>
-      <span className={highlight ? "font-bold text-primary" : "font-medium"}>{value}</span>
+    <div className="min-h-screen bg-background flex flex-col pt-4">
+      {/* Top bar */}
+      <div className="flex items-center justify-between mb-2">
+        <button onClick={() => navigate(-1)} className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
+          <X size={18} />
+        </button>
+      </div>
+
+      <h1 className="text-xl font-bold text-muted-foreground">Sell Crypto</h1>
+      <p className="text-sm text-muted-foreground mt-1">Rate ₦1,410/$</p>
+
+      {/* Amount display */}
+      <div className="mt-6 mb-2">
+        <p className="text-xs text-muted-foreground mb-1">Enter Amount</p>
+        <div className="flex items-center justify-between">
+          <p className="text-5xl font-bold tracking-tight">{amount}</p>
+          <button onClick={() => setStep("select-coin")} className="flex items-center gap-2 bg-secondary rounded-full px-3 py-2">
+            <CoinIcon coinId={coinId} />
+            <span className="text-sm font-medium">{coinId}</span>
+            <ChevronDown size={14} className="text-muted-foreground" />
+          </button>
+        </div>
+        <p className="text-sm text-muted-foreground mt-2">
+          ₦ {ngnValue.toLocaleString("en-NG", { minimumFractionDigits: 2 })} <span className="bg-secondary text-[10px] px-2 py-0.5 rounded ml-1">NGN</span>
+        </p>
+      </div>
+
+      {/* Balance bar */}
+      <div className="flex items-center justify-between bg-secondary/50 rounded-xl px-4 py-3 mt-2">
+        <span className="text-sm text-muted-foreground">Available Bal: <span className="text-foreground font-medium">{formatCoin(balance)}</span></span>
+        <button onClick={useMax} className="bg-primary/20 text-primary text-xs font-semibold px-3 py-1.5 rounded-lg">Use Max</button>
+      </div>
+
+      {/* Next button */}
+      <button
+        onClick={() => qty > 0 && qty <= balance && setStep("review")}
+        className={`mt-4 text-center py-3 text-base font-medium ${qty > 0 && qty <= balance ? "text-foreground" : "text-muted-foreground"}`}
+      >
+        Next
+      </button>
+
+      {/* Numpad */}
+      <div className="mt-auto grid grid-cols-3 gap-2 pb-6">
+        {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"].map((key) => (
+          <button
+            key={key}
+            onClick={() => key === "⌫" ? handleDelete() : handleDigit(key)}
+            className="h-16 rounded-xl bg-secondary text-xl font-semibold flex items-center justify-center active:bg-secondary/70 transition-colors"
+          >
+            {key}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
