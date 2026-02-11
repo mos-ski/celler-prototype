@@ -11,8 +11,8 @@ const NAV = [
   { to: "/profile", label: "Profile", icon: User },
 ];
 
-// Pages where bottom nav should be hidden (keypad/amount entry pages)
-const HIDE_NAV_PATTERNS = ["/buy", "/sell", "/swap", "/withdraw", "/receive"];
+// Only these exact pages show the bottom nav
+const SHOW_NAV_PAGES = ["/dashboard", "/history", "/profile"];
 
 export default function AppLayout() {
   const { isLoggedIn } = useAuth();
@@ -20,18 +20,15 @@ export default function AppLayout() {
 
   if (!isLoggedIn) return <Navigate to="/signin" replace />;
 
-  const hideNav = HIDE_NAV_PATTERNS.some(p => {
-    if (p === "/buy" || p === "/sell" || p === "/swap") return location.pathname === p;
-    return location.pathname.startsWith(p);
-  });
+  const showNav = SHOW_NAV_PAGES.includes(location.pathname);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <main className={cn("mx-auto w-full max-w-lg flex-1 px-4 pt-2", hideNav ? "pb-4" : "pb-24")}>
+      <main className={cn("mx-auto w-full max-w-lg flex-1 px-4 pt-2", showNav ? "pb-24" : "pb-4")}>
         <Outlet />
       </main>
 
-      {!hideNav && (
+      {showNav && (
         <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-border/50 bg-background/95 backdrop-blur-md safe-area-pb">
           <div className="mx-auto flex max-w-lg items-end justify-around px-2 pt-2 pb-2">
             {NAV.map((n) => {
@@ -39,9 +36,7 @@ export default function AppLayout() {
               if (n.fab) {
                 return (
                   <Link key={n.to} to={n.to} className="relative -mt-6 flex flex-col items-center">
-                    <div className={cn(
-                      "flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-colors bg-primary"
-                    )}>
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-colors bg-primary">
                       <n.icon size={24} className="text-primary-foreground" />
                     </div>
                     <span className={cn("mt-1 text-[10px]", active ? "text-primary" : "text-muted-foreground")}>{n.label}</span>

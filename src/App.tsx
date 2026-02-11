@@ -25,6 +25,13 @@ import TransactionDetail from "./pages/TransactionDetail";
 import Receipt from "./pages/Receipt";
 import Referral from "./pages/Referral";
 import BankDetails from "./pages/BankDetails";
+import KYC from "./pages/KYC";
+import UpdatePassword from "./pages/UpdatePassword";
+import UpdatePin from "./pages/UpdatePin";
+import TwoFactor from "./pages/TwoFactor";
+import Appearance from "./pages/Appearance";
+import Support from "./pages/Support";
+import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +65,13 @@ const App = () => (
                 <Route path="/receipt/:txId" element={<Receipt />} />
                 <Route path="/referral" element={<Referral />} />
                 <Route path="/bank-details" element={<BankDetails />} />
+                <Route path="/kyc" element={<KYC />} />
+                <Route path="/update-password" element={<UpdatePassword />} />
+                <Route path="/update-pin" element={<UpdatePin />} />
+                <Route path="/two-factor" element={<TwoFactor />} />
+                <Route path="/appearance" element={<Appearance />} />
+                <Route path="/support" element={<Support />} />
+                <Route path="/edit-profile" element={<EditProfile />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

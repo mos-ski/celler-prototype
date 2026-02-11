@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { store, formatUsd, formatCoin, getTxLabel, type Transaction, type TxType } from "@/lib/crypto";
+import { store, formatUsd, formatCoin, formatNgn, getTxLabel, type Transaction, type TxType } from "@/lib/crypto";
 import CoinIcon from "@/components/CoinIcon";
 import TxIcon from "@/components/TxIcon";
 import { Search, SlidersHorizontal } from "lucide-react";
@@ -30,7 +30,7 @@ export default function HistoryPage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<TxType | "all">("all");
   const [search, setSearch] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const transactions = store.getTransactions();
 
   let filtered = filter === "all" ? transactions : transactions.filter((tx) => tx.type === filter);
@@ -65,15 +65,16 @@ export default function HistoryPage() {
           />
         </div>
 
-        {/* Filter chips */}
+        {/* Filter chips - always visible by default, toggle with button */}
         {showFilters && (
-          <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-2 no-scrollbar">
             {FILTERS.map((f) => (
               <button
                 key={f.value}
+                type="button"
                 onClick={() => setFilter(f.value)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
-                  filter === f.value ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
+                  filter === f.value ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-secondary/70"
                 }`}
               >
                 {f.label}
@@ -93,6 +94,7 @@ export default function HistoryPage() {
                   {txs.map((tx) => (
                     <button
                       key={tx.id}
+                      type="button"
                       onClick={() => navigate(`/transaction/${tx.id}`)}
                       className="w-full flex items-center justify-between py-4 border-b border-border/20 last:border-0 text-left hover:bg-secondary/30 transition-colors rounded-lg px-1"
                     >

@@ -7,10 +7,17 @@ import { useState, useEffect } from "react";
 import { DashboardSkeleton } from "@/components/LoadingSkeleton";
 import PageTransition from "@/components/PageTransition";
 
+const BANNERS = [
+  { title: "Introducing bill payment with crypto.", sub: "Join the waitlist now", emoji: "🪙" },
+  { title: "Refer a friend, earn $10 in BTC.", sub: "Share your code today", emoji: "🎁" },
+  { title: "Trade with zero fees this week.", sub: "Limited time offer", emoji: "🔥" },
+];
+
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [bannerIdx, setBannerIdx] = useState(0);
   const wallet = store.getWallet();
   const visibleCoins = store.getVisibleCoins();
 
@@ -19,11 +26,22 @@ export default function Dashboard() {
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    const t = setInterval(() => setBannerIdx((i) => (i + 1) % BANNERS.length), 4000);
+    return () => clearInterval(t);
+  }, []);
+
   if (loading) return <DashboardSkeleton />;
 
   let totalUsd = 0;
   COINS.forEach((c) => { totalUsd += coinToUsd(c.id, wallet[c.id] || 0); });
-  const displayCoins = COINS.filter(c => visibleCoins.includes(c.id));
+
+  // Pin NGN to top, then visible coins
+  const ngnCoin = COINS.find(c => c.id === "NGN")!;
+  const otherCoins = COINS.filter(c => c.id !== "NGN" && visibleCoins.includes(c.id));
+  const displayCoins = [ngnCoin, ...otherCoins];
+
+  const banner = BANNERS[bannerIdx];
 
   return (
     <PageTransition>
@@ -75,16 +93,23 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Promo Banner */}
-        <div className="rounded-2xl bg-secondary p-4 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">Introducing bill payment with crypto.</p>
-            <p className="text-xs text-muted-foreground">Join the waitlist now</p>
+        {/* Promo Banner Slider */}
+        <div className="relative overflow-hidden rounded-2xl bg-secondary p-4">
+          <div className="flex items-center justify-between transition-all duration-500">
+            <div>
+              <p className="text-sm font-medium">{banner.title}</p>
+              <p className="text-xs text-muted-foreground">{banner.sub}</p>
+            </div>
+            <span className="text-3xl">{banner.emoji}</span>
           </div>
-          <span className="text-3xl">🪙</span>
+          <div className="flex justify-center gap-1.5 mt-3">
+            {BANNERS.map((_, i) => (
+              <button key={i} onClick={() => setBannerIdx(i)} className={`h-1.5 rounded-full transition-all ${i === bannerIdx ? "w-6 bg-primary" : "w-1.5 bg-muted-foreground/30"}`} />
+            ))}
+          </div>
         </div>
 
-        {/* Coin List */}
+        {/* Coin List — NGN pinned first */}
         <div className="space-y-1">
           {displayCoins.map((c) => {
             const qty = wallet[c.id] || 0;
@@ -103,16 +128,16 @@ export default function Dashboard() {
                       <span className="text-[10px] bg-secondary text-muted-foreground px-2 py-0.5 rounded">{c.name}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs text-muted-foreground">{formatUsd(c.marketPriceUsd)}</span>
+                      <span className="text-xs text-muted-foreground">{c.id === "NGN" ? "₦1.00" : formatUsd(c.marketPriceUsd)}</span>
                       <span className={`text-xs ${c.id === "BTC" ? "text-destructive" : "text-success"}`}>
-                        {c.id === "BTC" ? "-1.33%" : "+3.09%"}
+                        {c.id === "NGN" ? "" : c.id === "BTC" ? "-1.33%" : "+3.09%"}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-semibold">{formatCoin(qty, 7)}</p>
-                  <p className="text-xs text-muted-foreground">{formatUsd(usd)}</p>
+                  <p className="text-sm font-semibold">{c.id === "NGN" ? formatNgn(qty) : formatCoin(qty, 7)}</p>
+                  <p className="text-xs text-muted-foreground">{c.id === "NGN" ? "" : formatUsd(usd)}</p>
                 </div>
               </button>
             );
