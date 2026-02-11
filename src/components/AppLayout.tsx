@@ -7,7 +7,7 @@ const NAV = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/history", label: "History", icon: Clock },
   { to: "/swap", label: "Swap", icon: ArrowLeftRight, fab: true },
-  { to: "/buy", label: "Wallet", icon: Wallet },
+  { to: "/manage-assets", label: "Wallet", icon: Wallet },
   { to: "/profile", label: "Profile", icon: User },
 ];
 

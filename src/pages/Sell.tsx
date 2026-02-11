@@ -33,6 +33,7 @@ export default function SellPage() {
 
   const confirm = () => {
     store.updateWalletCoin(coinId, -qty);
+    store.updateWalletCoin("NGN" as CoinId, ngnValue);
     store.addTransaction({ id: genId(), type: "sell", coin: coinId, quantity: qty, usdValue, ngnValue, date: new Date().toISOString(), status: "completed" });
     setStep("success");
   };
@@ -47,7 +48,7 @@ export default function SellPage() {
           </button>
         </div>
         <div className="space-y-1">
-          {COINS.filter((c) => (wallet[c.id] || 0) > 0).map((c) => (
+          {COINS.filter((c) => c.id !== "NGN" && (wallet[c.id] || 0) > 0).map((c) => (
             <button key={c.id} onClick={() => { setCoinId(c.id); setAmount("0"); setStep("amount"); }}
               className="w-full flex items-center justify-between py-4 px-3 rounded-xl hover:bg-secondary/50 transition-colors">
               <div className="flex items-center gap-3">
@@ -82,17 +83,34 @@ export default function SellPage() {
         </div>
 
         <div className="bg-card rounded-t-3xl p-6 space-y-4 border-t border-border/30">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-2">Order Summary</h3>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Selling</span>
+            <span className="font-medium">{formatCoin(qty)} {coinId}</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Coin Price</span>
+            <span className="font-medium">{formatUsd(coin.marketPriceUsd)}</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">USD Value</span>
+            <span className="font-medium">{formatUsd(usdValue)}</span>
+          </div>
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
             <span className="text-muted-foreground">Exchange Rate</span>
             <span className="font-medium">₦1,410/$</span>
           </div>
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
-            <span className="text-muted-foreground">To:</span>
-            <span className="font-medium">NGN wallet</span>
+            <span className="text-muted-foreground">You Receive (NGN)</span>
+            <span className="font-medium text-success">{formatNgn(ngnValue)}</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Credited To</span>
+            <span className="font-medium">NGN Wallet</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Fee:</span>
-            <span className="font-medium">$0.01</span>
+            <span className="text-muted-foreground">Trading Fee</span>
+            <span className="font-medium text-success">Free</span>
           </div>
           <Button className="w-full h-14 rounded-2xl text-base font-semibold gap-2" onClick={confirm} disabled={qty <= 0 || qty > balance}>
             Confirm <ArrowRight size={18} />
@@ -109,7 +127,7 @@ export default function SellPage() {
       <div className="min-h-screen bg-background flex flex-col items-center pt-20 px-4">
         <CoinIcon coinId={coinId} />
         <h2 className="text-xl font-bold mt-6 text-center">
-          Order Placed! —<br />Your ${formatCoin(qty)} {coinId} trade has received.
+          Sold! —<br />{formatCoin(qty)} {coinId} converted to NGN.
         </h2>
 
         <TransactionTimeline
@@ -123,20 +141,24 @@ export default function SellPage() {
 
         <div className="w-full mt-10 space-y-4">
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
-            <span className="text-muted-foreground">Set Rate</span>
+            <span className="text-muted-foreground">Sold</span>
+            <span className="font-medium">{formatCoin(qty)} {coinId}</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">USD Value</span>
+            <span className="font-medium">{formatUsd(usdValue)}</span>
+          </div>
+          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+            <span className="text-muted-foreground">Exchange Rate</span>
             <span className="font-medium">₦1,410/$</span>
           </div>
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
-            <span className="text-muted-foreground">To:</span>
-            <span className="font-medium">NGN wallet</span>
-          </div>
-          <div className="flex justify-between text-sm border-b border-border/20 pb-3">
-            <span className="text-muted-foreground">Estimated Value</span>
-            <span className="font-medium">{formatNgn(ngnValue)}</span>
+            <span className="text-muted-foreground">Credited to NGN Wallet</span>
+            <span className="font-medium text-success">{formatNgn(ngnValue)}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Fee:</span>
-            <span className="font-medium">$0.01</span>
+            <span className="text-muted-foreground">Trading Fee</span>
+            <span className="font-medium text-success">Free</span>
           </div>
         </div>
 
@@ -152,7 +174,6 @@ export default function SellPage() {
   // Amount entry (default)
   return (
     <div className="min-h-screen bg-background flex flex-col pt-4">
-      {/* Top bar */}
       <div className="flex items-center justify-between mb-2">
         <button onClick={() => navigate(-1)} className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
           <X size={18} />
@@ -162,9 +183,8 @@ export default function SellPage() {
       <h1 className="text-xl font-bold text-muted-foreground">Sell Crypto</h1>
       <p className="text-sm text-muted-foreground mt-1">Rate ₦1,410/$</p>
 
-      {/* Amount display */}
       <div className="mt-6 mb-2">
-        <p className="text-xs text-muted-foreground mb-1">Enter Amount</p>
+        <p className="text-xs text-muted-foreground mb-1">Enter Amount ({coinId})</p>
         <div className="flex items-center justify-between">
           <p className="text-5xl font-bold tracking-tight">{amount}</p>
           <button onClick={() => setStep("select-coin")} className="flex items-center gap-2 bg-secondary rounded-full px-3 py-2">
@@ -174,13 +194,12 @@ export default function SellPage() {
           </button>
         </div>
         <p className="text-sm text-muted-foreground mt-2">
-          ₦ {ngnValue.toLocaleString("en-NG", { minimumFractionDigits: 2 })} <span className="bg-secondary text-[10px] px-2 py-0.5 rounded ml-1">NGN</span>
+          ≈ {formatUsd(usdValue)} · {formatNgn(ngnValue)}
         </p>
       </div>
 
-      {/* Balance bar */}
       <div className="flex items-center justify-between bg-secondary/50 rounded-xl px-4 py-3 mt-2">
-        <span className="text-sm text-muted-foreground">Available Bal: <span className="text-foreground font-medium">{formatCoin(balance)}</span></span>
+        <span className="text-sm text-muted-foreground">Available: <span className="text-foreground font-medium">{formatCoin(balance)} {coinId}</span></span>
         <button onClick={useMax} className="bg-primary/20 text-primary text-xs font-semibold px-3 py-1.5 rounded-lg">Use Max</button>
       </div>
 
