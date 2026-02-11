@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { store, COINS, coinToUsd, usdToNgn, formatUsd, formatNgn, formatCoin, type Transaction } from "@/lib/crypto";
-import { ShoppingCart, Banknote, ArrowLeftRight } from "lucide-react";
+import { Plus, Minus, ArrowDown, ArrowUp, Gift, Bell } from "lucide-react";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -14,90 +12,108 @@ export default function Dashboard() {
   COINS.forEach((c) => { totalUsd += coinToUsd(c.id, wallet[c.id] || 0); });
 
   return (
-    <div className="space-y-6">
-      {/* Greeting */}
-      <div>
-        <h1 className="text-2xl font-bold">Welcome, {user?.fullName?.split(" ")[0] ?? "Trader"} 👋</h1>
-        <p className="text-muted-foreground text-sm">Your portfolio at a glance</p>
-      </div>
-
-      {/* Total balance */}
-      <Card className="bg-gradient-to-br from-primary/20 to-card border-primary/20">
-        <CardContent className="py-6">
-          <p className="text-sm text-muted-foreground mb-1">Total Balance</p>
-          <p className="text-3xl font-bold">{formatUsd(totalUsd)}</p>
-          <p className="text-lg text-primary font-semibold">{formatNgn(usdToNgn(totalUsd))}</p>
-        </CardContent>
-      </Card>
-
-      {/* Quick actions */}
-      <div className="grid grid-cols-3 gap-3">
-        <Link to="/buy"><Button variant="outline" className="w-full flex flex-col h-auto py-3 gap-1 border-primary/30 hover:bg-primary/10"><ShoppingCart size={20} className="text-primary" /><span className="text-xs">Buy</span></Button></Link>
-        <Link to="/sell"><Button variant="outline" className="w-full flex flex-col h-auto py-3 gap-1 border-primary/30 hover:bg-primary/10"><Banknote size={20} className="text-primary" /><span className="text-xs">Sell</span></Button></Link>
-        <Link to="/swap"><Button variant="outline" className="w-full flex flex-col h-auto py-3 gap-1 border-primary/30 hover:bg-primary/10"><ArrowLeftRight size={20} className="text-primary" /><span className="text-xs">Swap</span></Button></Link>
-      </div>
-
-      {/* Portfolio */}
-      <div>
-        <h2 className="text-lg font-semibold mb-3">Portfolio</h2>
-        <div className="space-y-2">
-          {COINS.map((c) => {
-            const qty = wallet[c.id] || 0;
-            const usd = coinToUsd(c.id, qty);
-            return (
-              <Card key={c.id} className="border-border/40">
-                <CardContent className="flex items-center justify-between py-3 px-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{c.icon}</span>
-                    <div>
-                      <p className="font-medium text-sm">{c.name}</p>
-                      <p className="text-xs text-muted-foreground">{c.id}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{formatCoin(qty)} {c.id}</p>
-                    <p className="text-xs text-muted-foreground">{formatUsd(usd)}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Recent transactions */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Recent Transactions</h2>
-          <Link to="/history" className="text-xs text-primary hover:underline">View all</Link>
-        </div>
-        {transactions.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No transactions yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {transactions.map((tx) => <TxRow key={tx.id} tx={tx} />)}
+    <div className="space-y-6 pt-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-lg">
+            {user?.fullName?.[0]?.toUpperCase() ?? "T"}
           </div>
-        )}
+          <span className="text-base font-medium">Hello, {user?.fullName?.split(" ")[0] ?? "Trader"}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground">
+            <Bell size={18} />
+          </button>
+          <Link to="/buy" className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
+            <Plus size={18} className="text-primary-foreground" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Balance Card */}
+      <div className="text-center py-6">
+        <p className="text-xs tracking-widest text-muted-foreground uppercase mb-2">Total Wallet</p>
+        <p className="text-4xl font-bold tracking-tight">{formatUsd(totalUsd)}</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          NGN {usdToNgn(totalUsd).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
+          <span className="text-success ml-2">↑ +0.98%</span>
+        </p>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="flex justify-center gap-4">
+        {[
+          { icon: Plus, label: "Buy", to: "/buy" },
+          { icon: Minus, label: "Sell", to: "/sell" },
+          { icon: ArrowDown, label: "Deposit", to: "/buy" },
+          { icon: ArrowUp, label: "Withdraw", to: "/sell" },
+          { icon: Gift, label: "Earn", to: "/dashboard", accent: true },
+        ].map((a) => (
+          <Link key={a.label} to={a.to} className="flex flex-col items-center gap-2">
+            <div className={`h-14 w-14 rounded-2xl flex items-center justify-center ${a.accent ? "bg-destructive/80" : "bg-secondary"}`}>
+              <a.icon size={22} className={a.accent ? "text-destructive-foreground" : "text-foreground"} />
+            </div>
+            <span className="text-[11px] text-muted-foreground">{a.label}</span>
+          </Link>
+        ))}
+      </div>
+
+      {/* Promo Banner */}
+      <div className="rounded-2xl bg-secondary p-4 flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium">Introducing bill payment with crypto.</p>
+          <p className="text-xs text-muted-foreground">Join the waitlist now</p>
+        </div>
+        <span className="text-3xl">🪙</span>
+      </div>
+
+      {/* Coin List */}
+      <div className="space-y-1">
+        {COINS.map((c) => {
+          const qty = wallet[c.id] || 0;
+          const usd = coinToUsd(c.id, qty);
+          return (
+            <div key={c.id} className="flex items-center justify-between py-4 border-b border-border/30 last:border-0">
+              <div className="flex items-center gap-3">
+                <CoinIcon coinId={c.id} />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-sm">{c.id}</span>
+                    <span className="text-[10px] bg-secondary text-muted-foreground px-2 py-0.5 rounded">{c.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs text-muted-foreground">{formatUsd(c.marketPriceUsd)}</span>
+                    <span className="text-xs text-success">+3.09%</span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-semibold">{formatCoin(qty, 7)}</p>
+                <p className="text-xs text-muted-foreground">{formatUsd(usd)}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-function TxRow({ tx }: { tx: Transaction }) {
-  const label = tx.type === "buy" ? `Bought ${tx.coin}` : tx.type === "sell" ? `Sold ${tx.coin}` : `${tx.fromCoin} → ${tx.toCoin}`;
-  const color = tx.type === "buy" ? "text-success" : tx.type === "sell" ? "text-destructive" : "text-primary";
+function CoinIcon({ coinId }: { coinId: string }) {
+  const colors: Record<string, string> = {
+    BTC: "bg-orange-500",
+    ETH: "bg-slate-500",
+    USDT: "bg-emerald-600",
+    BNB: "bg-yellow-500",
+    SOL: "bg-purple-500",
+  };
+  const icons: Record<string, string> = { BTC: "₿", ETH: "Ξ", USDT: "₮", BNB: "◆", SOL: "◎" };
   return (
-    <Card className="border-border/40">
-      <CardContent className="flex items-center justify-between py-3 px-4">
-        <div>
-          <p className={`text-sm font-medium ${color}`}>{tx.type.toUpperCase()}</p>
-          <p className="text-xs text-muted-foreground">{label}</p>
-        </div>
-        <div className="text-right">
-          <p className="text-sm font-medium">{formatUsd(tx.usdValue)}</p>
-          <p className="text-xs text-muted-foreground">{new Date(tx.date).toLocaleDateString()}</p>
-        </div>
-      </CardContent>
-    </Card>
+    <div className={`h-10 w-10 rounded-full ${colors[coinId] || "bg-secondary"} flex items-center justify-center text-white font-bold text-sm`}>
+      {icons[coinId] || "?"}
+    </div>
   );
 }
+
+export { CoinIcon };
