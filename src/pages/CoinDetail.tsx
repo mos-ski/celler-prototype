@@ -22,26 +22,34 @@ export default function CoinDetailPage() {
     tx.coin === id || tx.fromCoin === id || tx.toCoin === id
   );
 
-  const actions = [
-    { icon: Plus, label: "Buy", to: "/buy" },
-    { icon: Minus, label: "Sell", to: "/sell" },
-    { icon: ArrowDown, label: "Deposit", to: `/receive/${id}` },
-    { icon: ArrowUp, label: "Withdraw", to: `/withdraw/${id}` },
-  ];
+  const isNgn = id === "NGN";
+
+  const actions = isNgn
+    ? [
+        { icon: ArrowDown, label: "Deposit", to: `/receive/${id}` },
+        { icon: ArrowUp, label: "Withdraw", to: `/withdraw/${id}` },
+      ]
+    : [
+        { icon: Plus, label: "Buy", to: "/buy" },
+        { icon: Minus, label: "Sell", to: "/sell" },
+        { icon: ArrowDown, label: "Deposit", to: `/receive/${id}` },
+        { icon: ArrowUp, label: "Withdraw", to: `/withdraw/${id}` },
+      ];
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-24">
+      <div className="min-h-screen bg-background pb-8">
         <div className="flex items-center gap-3 pt-4 px-4 mb-6">
           <button onClick={() => navigate(-1)} className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
             <ArrowLeft size={18} />
           </button>
+          <h1 className="text-lg font-semibold">{coin.name}</h1>
         </div>
 
         <div className="flex flex-col items-center text-center px-4">
           <CoinIcon coinId={id} size={64} />
-          <p className="text-3xl font-bold mt-4">{formatCoin(qty, 6)} {id}</p>
-          <p className="text-sm text-muted-foreground mt-1">{formatNgn(ngn)}</p>
+          <p className="text-3xl font-bold mt-4">{isNgn ? formatNgn(qty) : `${formatCoin(qty, 6)} ${id}`}</p>
+          <p className="text-sm text-muted-foreground mt-1">{isNgn ? "" : formatNgn(ngn)}</p>
         </div>
 
         <div className="flex justify-center gap-6 mt-8 px-4">
@@ -69,7 +77,12 @@ export default function CoinDetailPage() {
                 <Inbox size={28} className="text-muted-foreground" />
               </div>
               <p className="text-sm">Your Recent Transactions</p>
-              <p className="text-sm">will appear here</p>
+              <p className="text-sm mb-4">will appear here</p>
+              {isNgn && (
+                <Button asChild className="rounded-2xl">
+                  <Link to={`/receive/${id}`}>Deposit {id}</Link>
+                </Button>
+              )}
             </div>
           ) : (
             <div className="space-y-0">
@@ -95,18 +108,22 @@ export default function CoinDetailPage() {
             </div>
           )}
 
-          <Button className="w-full h-14 rounded-2xl text-base font-semibold mt-6" asChild>
-            <Link to="/buy">Buy {id}</Link>
-          </Button>
+          {!isNgn && (
+            <Button className="w-full h-14 rounded-2xl text-base font-semibold mt-6" asChild>
+              <Link to="/buy">Buy {id}</Link>
+            </Button>
+          )}
         </div>
 
-        <div className="px-4 mt-6 pt-4 border-t border-border/20">
-          <p className="text-xs text-muted-foreground">Current {id} Price</p>
-          <div className="flex items-center gap-2">
-            <p className="text-2xl font-bold">{formatUsd(coin.marketPriceUsd)}</p>
-            <span className="text-xs text-destructive">-1.33%</span>
+        {!isNgn && (
+          <div className="px-4 mt-6 pt-4 border-t border-border/20">
+            <p className="text-xs text-muted-foreground">Current {id} Price</p>
+            <div className="flex items-center gap-2">
+              <p className="text-2xl font-bold">{formatUsd(coin.marketPriceUsd)}</p>
+              <span className="text-xs text-destructive">-1.33%</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </PageTransition>
   );
