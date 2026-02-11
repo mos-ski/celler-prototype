@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { getCoin, coinToUsd, usdToNgn, formatCoin, formatNgn, store, genId, type CoinId } from "@/lib/crypto";
 import { X, ChevronDown, ArrowRight, ScanFace } from "lucide-react";
-import { CoinIcon } from "./Dashboard";
+import CoinIcon from "@/components/CoinIcon";
 import TransactionTimeline from "@/components/TransactionTimeline";
 
 type Step = "amount" | "address" | "confirm" | "faceid" | "success";
