@@ -208,14 +208,11 @@ export default function SwapPage() {
         <button onClick={useMax} className="bg-primary/20 text-primary text-xs font-semibold px-3 py-1.5 rounded-lg">Use Max</button>
       </div>
 
-      <button
-        onClick={() => qty > 0 && qty <= fromBalance && setStep("review")}
-        className={`mt-4 text-center py-3 text-base font-medium ${qty > 0 && qty <= fromBalance ? "text-foreground" : "text-muted-foreground"}`}
-      >
-        Next
-      </button>
-
-      <div className="mt-auto grid grid-cols-3 gap-2 pb-6">
+      <div className="mt-auto flex flex-col gap-2 pb-6">
+        <Button className="w-full h-14 rounded-2xl text-base font-semibold" disabled={qty <= 0 || qty > fromBalance} onClick={() => setStep("review")}>
+          Next
+        </Button>
+        <div className="grid grid-cols-3 gap-2">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"].map((key) => (
           <button
             key={key}
@@ -225,6 +222,7 @@ export default function SwapPage() {
             {key}
           </button>
         ))}
+        </div>
       </div>
     </div>
   );
