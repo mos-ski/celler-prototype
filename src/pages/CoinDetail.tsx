@@ -5,11 +5,15 @@ import TxIcon from "@/components/TxIcon";
 import { ArrowLeft, Plus, Minus, ArrowDown, ArrowUp, Inbox, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "@/components/PageTransition";
+import { useState } from "react";
+
+const STATUS_FILTERS = ["all", "completed", "pending", "failed"] as const;
 
 export default function CoinDetailPage() {
   const { coinId } = useParams<{ coinId: string }>();
   const navigate = useNavigate();
   const id = (coinId?.toUpperCase() || "BTC") as CoinId;
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   let coin;
   try { coin = getCoin(id); } catch { navigate("/dashboard"); return null; }
@@ -18,9 +22,10 @@ export default function CoinDetailPage() {
   const qty = wallet[id] || 0;
   const usd = coinToUsd(id, qty);
   const ngn = usdToNgn(usd);
-  const txs = store.getTransactions().filter((tx) =>
+  const allTxs = store.getTransactions().filter((tx) =>
     tx.coin === id || tx.fromCoin === id || tx.toCoin === id
   );
+  const txs = statusFilter === "all" ? allTxs : allTxs.filter(tx => tx.status === statusFilter);
 
   const isNgn = id === "NGN";
 
@@ -38,7 +43,7 @@ export default function CoinDetailPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-8">
+      <div className="min-h-screen bg-background pb-28 flex flex-col">
         <div className="flex items-center gap-3 pt-4 px-4 mb-6">
           <button onClick={() => navigate(-1)} className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center">
             <ArrowLeft size={18} />
@@ -63,12 +68,27 @@ export default function CoinDetailPage() {
           ))}
         </div>
 
-        <div className="mt-8 px-4">
+        <div className="mt-8 px-4 flex-1">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-semibold">Transactions History</h3>
             <button className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
               <SlidersHorizontal size={14} className="text-muted-foreground" />
             </button>
+          </div>
+
+          {/* Status filter chips */}
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-2 no-scrollbar">
+            {STATUS_FILTERS.map((s) => (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                className={`px-4 py-2 rounded-full text-xs font-medium transition-colors whitespace-nowrap capitalize ${
+                  statusFilter === s ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
           </div>
 
           {txs.length === 0 ? (
@@ -96,7 +116,9 @@ export default function CoinDetailPage() {
                     <TxIcon tx={tx} />
                     <div>
                       <p className="text-sm font-medium">{getTxLabel(tx)}</p>
-                      <p className="text-xs text-success">Completed</p>
+                      <p className={`text-xs ${tx.status === "completed" ? "text-success" : tx.status === "failed" ? "text-destructive" : "text-primary"}`}>
+                        {tx.status === "completed" ? "Completed" : tx.status === "failed" ? "Failed" : "Pending"}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -115,12 +137,18 @@ export default function CoinDetailPage() {
           )}
         </div>
 
+        {/* Fixed price bar at bottom */}
         {!isNgn && (
-          <div className="px-4 mt-6 pt-4 border-t border-border/20">
-            <p className="text-xs text-muted-foreground">Current {id} Price</p>
-            <div className="flex items-center gap-2">
-              <p className="text-2xl font-bold">{formatUsd(coin.marketPriceUsd)}</p>
-              <span className="text-xs text-destructive">-1.33%</span>
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border/20 px-4 py-4">
+            <div className="max-w-lg mx-auto flex items-center justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">Current {id} Price</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-2xl font-bold">{formatUsd(coin.marketPriceUsd)}</p>
+                  <span className="text-xs text-destructive">-1.33%</span>
+                </div>
+              </div>
+              <CoinIcon coinId={id} size={32} />
             </div>
           </div>
         )}

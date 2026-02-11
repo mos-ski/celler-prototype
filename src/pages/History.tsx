@@ -6,13 +6,20 @@ import { Search, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 
-const FILTERS: { label: string; value: TxType | "all" }[] = [
+const TYPE_FILTERS: { label: string; value: TxType | "all" }[] = [
   { label: "All", value: "all" },
   { label: "Buy", value: "buy" },
   { label: "Sell", value: "sell" },
   { label: "Swap", value: "swap" },
   { label: "Send", value: "send" },
   { label: "Receive", value: "receive" },
+];
+
+const STATUS_FILTERS = [
+  { label: "All", value: "all" },
+  { label: "Completed", value: "completed" },
+  { label: "Pending", value: "pending" },
+  { label: "Failed", value: "failed" },
 ];
 
 function groupByDate(txs: Transaction[]): Record<string, Transaction[]> {
@@ -28,12 +35,16 @@ function groupByDate(txs: Transaction[]): Record<string, Transaction[]> {
 
 export default function HistoryPage() {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState<TxType | "all">("all");
+  const [typeFilter, setTypeFilter] = useState<TxType | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [showFilters, setShowFilters] = useState(true);
   const transactions = store.getTransactions();
 
-  let filtered = filter === "all" ? transactions : transactions.filter((tx) => tx.type === filter);
+  let filtered = typeFilter === "all" ? transactions : transactions.filter((tx) => tx.type === typeFilter);
+  if (statusFilter !== "all") {
+    filtered = filtered.filter(tx => tx.status === statusFilter);
+  }
   if (search) {
     const q = search.toLowerCase();
     filtered = filtered.filter(tx => getTxLabel(tx).toLowerCase().includes(q) || tx.coin?.toLowerCase().includes(q));
@@ -65,22 +76,45 @@ export default function HistoryPage() {
           />
         </div>
 
-        {/* Filter chips - always visible by default, toggle with button */}
         {showFilters && (
-          <div className="flex gap-2 mb-4 overflow-x-auto pb-2 no-scrollbar">
-            {FILTERS.map((f) => (
-              <button
-                key={f.value}
-                type="button"
-                onClick={() => setFilter(f.value)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
-                  filter === f.value ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-secondary/70"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
+          <>
+            {/* Type filter chips */}
+            <div className="flex gap-2 mb-3 overflow-x-auto pb-2 no-scrollbar">
+              {TYPE_FILTERS.map((f) => (
+                <button
+                  key={f.value}
+                  type="button"
+                  onClick={() => setTypeFilter(f.value)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
+                    typeFilter === f.value ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:bg-secondary/70"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Status filter chips */}
+            <div className="flex gap-2 mb-4 overflow-x-auto pb-2 no-scrollbar">
+              {STATUS_FILTERS.map((f) => (
+                <button
+                  key={f.value}
+                  type="button"
+                  onClick={() => setStatusFilter(f.value)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
+                    statusFilter === f.value
+                      ? f.value === "completed" ? "bg-success text-success-foreground"
+                        : f.value === "failed" ? "bg-destructive text-destructive-foreground"
+                        : f.value === "pending" ? "bg-primary text-primary-foreground"
+                        : "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground hover:bg-secondary/70"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </>
         )}
 
         {filtered.length === 0 ? (
@@ -102,7 +136,9 @@ export default function HistoryPage() {
                         <TxIcon tx={tx} />
                         <div>
                           <p className="text-sm font-medium">{getTxLabel(tx)}</p>
-                          <p className="text-xs text-success">Completed</p>
+                          <p className={`text-xs ${tx.status === "completed" ? "text-success" : tx.status === "failed" ? "text-destructive" : "text-primary"}`}>
+                            {tx.status === "completed" ? "Completed" : tx.status === "failed" ? "Failed" : "Pending"}
+                          </p>
                         </div>
                       </div>
                       <div className="text-right">
