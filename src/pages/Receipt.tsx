@@ -1,13 +1,15 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { store, formatCoin, formatUsd, formatNgn } from "@/lib/crypto";
 import CoinIcon from "@/components/CoinIcon";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "@/components/PageTransition";
+import { useRef } from "react";
 
 export default function ReceiptPage() {
   const { txId } = useParams<{ txId: string }>();
   const navigate = useNavigate();
+  const receiptRef = useRef<HTMLDivElement>(null);
 
   const tx = store.getTransactions().find(t => t.id === txId);
   if (!tx) { navigate("/history"); return null; }
@@ -16,6 +18,61 @@ export default function ReceiptPage() {
   const d = new Date(tx.date);
   const dateStr = d.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
   const timeStr = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + (d.getHours() >= 12 ? "PM" : "AM");
+
+  const handleDownload = () => {
+    // Use print-to-PDF as a cross-browser PDF export
+    const printContent = receiptRef.current;
+    if (!printContent) return;
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.write(`
+      <html><head><title>Receipt - ${tx.id}</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
+        body { padding: 24px; background: #fff; color: #111; }
+        .receipt { max-width: 400px; margin: 0 auto; }
+        .logo { text-align: center; font-size: 24px; font-weight: bold; color: #6366f1; margin-bottom: 16px; }
+        .type { text-align: center; color: #888; text-transform: capitalize; margin-bottom: 8px; }
+        .amount { text-align: center; font-size: 28px; font-weight: bold; margin-bottom: 4px; }
+        .usd { text-align: center; color: #888; margin-bottom: 24px; }
+        .divider { border-top: 1px dashed #ddd; margin: 16px 0; }
+        .row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+        .row .label { color: #888; }
+        .row .value { font-weight: 500; }
+        .status-completed { color: #22c55e; }
+        .status-failed { color: #ef4444; }
+        .status-pending { color: #6366f1; }
+      </style></head><body>
+      <div class="receipt">
+        <div class="logo">celler</div>
+        <div class="type">${tx.type}</div>
+        <div class="amount">${formatCoin(tx.quantity, 4)} ${coinId}</div>
+        <div class="usd">≈ ${formatUsd(tx.usdValue)}</div>
+        <div class="divider"></div>
+        <div class="row"><span class="label">You Receive:</span><span class="value">${formatNgn(tx.ngnValue)}</span></div>
+        <div class="row"><span class="label">Rate:</span><span class="value">₦1,410/$</span></div>
+        <div class="row"><span class="label">Network:</span><span class="value">${tx.network || "BEP20"}</span></div>
+        <div class="row"><span class="label">Transaction ID:</span><span class="value">${tx.id}</span></div>
+        <div class="row"><span class="label">Status:</span><span class="value status-${tx.status}">${tx.status === "completed" ? "Completed" : tx.status === "failed" ? "Failed" : "Pending"}</span></div>
+        <div class="row"><span class="label">Time:</span><span class="value">${dateStr}, ${timeStr}</span></div>
+      </div>
+      </body></html>
+    `);
+    w.document.close();
+    setTimeout(() => { w.print(); }, 500);
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: `Celler Receipt - ${tx.id}`,
+      text: `Transaction: ${tx.type.toUpperCase()}\nAmount: ${formatCoin(tx.quantity, 4)} ${coinId}\nValue: ${formatUsd(tx.usdValue)}\nNGN: ${formatNgn(tx.ngnValue)}\nStatus: ${tx.status}\nDate: ${dateStr}, ${timeStr}\nID: ${tx.id}`,
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch {}
+    } else {
+      navigator.clipboard.writeText(shareData.text);
+    }
+  };
 
   return (
     <PageTransition>
@@ -28,7 +85,7 @@ export default function ReceiptPage() {
         </div>
 
         {/* Receipt card */}
-        <div className="relative bg-card rounded-3xl border border-border/20 overflow-hidden">
+        <div ref={receiptRef} className="relative bg-card rounded-3xl border border-border/20 overflow-hidden">
           {/* Zigzag top */}
           <div className="h-4 bg-card relative">
             <svg className="absolute bottom-0 w-full" height="8" viewBox="0 0 400 8" preserveAspectRatio="none">
@@ -37,7 +94,6 @@ export default function ReceiptPage() {
           </div>
 
           <div className="p-6 pt-4">
-            {/* Logo */}
             <div className="text-center mb-4">
               <p className="text-xl font-bold text-primary">celler</p>
             </div>
@@ -50,12 +106,11 @@ export default function ReceiptPage() {
             </div>
             <p className="text-center text-sm text-muted-foreground mb-4">≈ {formatUsd(tx.usdValue)}</p>
 
-            {/* Dotted line */}
             <div className="border-t border-dashed border-border/40 my-4" />
 
             <div className="space-y-3">
               <ReceiptRow label="You Receive:" value={formatNgn(tx.ngnValue)} />
-              <ReceiptRow label="Rate:" value="1500" />
+              <ReceiptRow label="Rate:" value="₦1,410/$" />
               <ReceiptRow label="Network:" value={tx.network || "BEP20"} />
               <ReceiptRow label="Cash Destination:" value="90020840r489" />
               <ReceiptRow label="Bank Name:" value="Access Bank" />
@@ -80,11 +135,11 @@ export default function ReceiptPage() {
         </div>
 
         <div className="flex gap-3 mt-6">
-          <Button variant="secondary" className="flex-1 h-14 rounded-2xl text-base font-semibold">
-            Share Receipt
+          <Button variant="secondary" className="flex-1 h-14 rounded-2xl text-base font-semibold gap-2" onClick={handleShare}>
+            <Share2 size={16} /> Share Receipt
           </Button>
-          <Button className="flex-1 h-14 rounded-2xl text-base font-semibold">
-            Download Receipt
+          <Button className="flex-1 h-14 rounded-2xl text-base font-semibold gap-2" onClick={handleDownload}>
+            <Download size={16} /> Download PDF
           </Button>
         </div>
       </div>

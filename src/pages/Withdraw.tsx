@@ -9,9 +9,13 @@ import TransactionTimeline from "@/components/TransactionTimeline";
 type Step = "amount" | "address" | "confirm" | "auth" | "success";
 type AuthMode = "faceid" | "pin";
 
-// Withdrawal fees set by admin
-const WITHDRAWAL_FEE_NGN = 100; // ₦100 for NGN withdrawals
-const WITHDRAWAL_FEE_USD = 0.5; // $0.5 for crypto withdrawals
+const WITHDRAWAL_FEE_NGN = 100;
+const WITHDRAWAL_FEE_USD = 0.5;
+
+const BANKS = [
+  "Access Bank", "First Bank", "GTBank", "UBA", "Zenith Bank", "Kuda Bank",
+  "Opay", "Palmpay", "Wema Bank", "Sterling Bank", "Fidelity Bank", "Stanbic IBTC",
+];
 
 export default function WithdrawPage() {
   const { coinId: paramCoin } = useParams();
@@ -19,7 +23,12 @@ export default function WithdrawPage() {
   const [coinId] = useState<CoinId>((paramCoin?.toUpperCase() || "USDT") as CoinId);
   const [step, setStep] = useState<Step>("amount");
   const [amount, setAmount] = useState("0");
+  // Crypto address
   const [address, setAddress] = useState("");
+  // NGN bank details
+  const [bankName, setBankName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
   const [saveAsBeneficiary, setSaveAsBeneficiary] = useState(true);
 
   const isNgn = coinId === "NGN";
@@ -28,7 +37,7 @@ export default function WithdrawPage() {
   const qty = parseFloat(amount) || 0;
   const usdVal = coinToUsd(coinId, qty);
   const ngnVal = usdToNgn(usdVal);
-  const feeDisplay = isNgn ? `₦${WITHDRAWAL_FEE_NGN}` : `$${WITHDRAWAL_FEE_USD}`;
+  const feeDisplay = isNgn ? `₦${WITHDRAWAL_FEE_NGN.toLocaleString()}` : `$${WITHDRAWAL_FEE_USD.toFixed(2)}`;
 
   const handleDigit = (d: string) => {
     setAmount((prev) => {
@@ -40,17 +49,30 @@ export default function WithdrawPage() {
   const handleDelete = () => setAmount((prev) => prev.length <= 1 ? "0" : prev.slice(0, -1));
   const useMax = () => setAmount(String(balance));
 
+  const recipientLabel = isNgn ? `${accountName} · ${bankName}` : `${address.slice(0, 6)}...${address.slice(-4)}`;
+
   const doWithdraw = () => {
     store.updateWalletCoin(coinId, -qty);
     store.addTransaction({
       id: genId(), type: "withdraw", coin: coinId, quantity: qty, usdValue: usdVal, ngnValue: ngnVal, date: new Date().toISOString(), status: "completed",
       fee: isNgn ? WITHDRAWAL_FEE_NGN : WITHDRAWAL_FEE_USD,
-      address,
+      address: isNgn ? accountNumber : address,
     });
     setStep("success");
   };
 
   if (step === "address") {
+    if (isNgn) {
+      return (
+        <NgnBankStep
+          bankName={bankName} setBankName={setBankName}
+          accountNumber={accountNumber} setAccountNumber={setAccountNumber}
+          accountName={accountName} setAccountName={setAccountName}
+          saveAsBeneficiary={saveAsBeneficiary} setSaveAsBeneficiary={setSaveAsBeneficiary}
+          onBack={() => setStep("amount")} onNext={() => setStep("confirm")}
+        />
+      );
+    }
     return <AddressStep coinId={coinId} address={address} setAddress={setAddress} saveAsBeneficiary={saveAsBeneficiary} setSaveAsBeneficiary={setSaveAsBeneficiary} isNgn={isNgn} onBack={() => setStep("amount")} onNext={() => setStep("confirm")} />;
   }
 
@@ -96,8 +118,20 @@ export default function WithdrawPage() {
           )}
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
             <span className="text-muted-foreground">Send To</span>
-            <span className="font-medium text-primary">{address.slice(0, 6)}...{address.slice(-4)}</span>
+            <span className="font-medium text-primary">{recipientLabel}</span>
           </div>
+          {isNgn && (
+            <>
+              <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+                <span className="text-muted-foreground">Bank</span>
+                <span className="font-medium">{bankName}</span>
+              </div>
+              <div className="flex justify-between text-sm border-b border-border/20 pb-3">
+                <span className="text-muted-foreground">Account Number</span>
+                <span className="font-medium">{accountNumber}</span>
+              </div>
+            </>
+          )}
           <div className="flex justify-between text-sm border-b border-border/20 pb-3">
             <span className="text-muted-foreground">Withdrawal Fee</span>
             <span className="font-medium text-destructive">{feeDisplay}</span>
@@ -161,7 +195,7 @@ export default function WithdrawPage() {
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Send to</span>
-            <span className="font-medium text-primary">{address.slice(0, 6)}...{address.slice(-4)}</span>
+            <span className="font-medium text-primary">{recipientLabel}</span>
           </div>
         </div>
 
@@ -184,7 +218,7 @@ export default function WithdrawPage() {
       </div>
 
       <h1 className="text-xl font-bold text-muted-foreground">Withdraw {isNgn ? "NGN" : "Crypto"}</h1>
-      <p className="text-sm text-muted-foreground mt-1">{isNgn ? `Fee: ₦${WITHDRAWAL_FEE_NGN}` : `Fee: $${WITHDRAWAL_FEE_USD} · Rate ₦1,410/$`}</p>
+      <p className="text-sm text-muted-foreground mt-1">{isNgn ? `Fee: ₦${WITHDRAWAL_FEE_NGN.toLocaleString()}` : `Fee: $${WITHDRAWAL_FEE_USD.toFixed(2)} · Rate ₦1,410/$`}</p>
 
       <div className="mt-6 mb-2">
         <p className="text-xs text-primary mb-1">Enter Amount</p>
@@ -230,7 +264,97 @@ export default function WithdrawPage() {
   );
 }
 
-/* ─── Address Step ─── */
+/* ─── NGN Bank Details Step ─── */
+function NgnBankStep({ bankName, setBankName, accountNumber, setAccountNumber, accountName, setAccountName, saveAsBeneficiary, setSaveAsBeneficiary, onBack, onNext }: {
+  bankName: string; setBankName: (v: string) => void;
+  accountNumber: string; setAccountNumber: (v: string) => void;
+  accountName: string; setAccountName: (v: string) => void;
+  saveAsBeneficiary: boolean; setSaveAsBeneficiary: (v: boolean) => void;
+  onBack: () => void; onNext: () => void;
+}) {
+  const [showBankList, setShowBankList] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col px-4">
+      <div className="bg-card rounded-t-3xl mt-auto p-6 flex flex-col min-h-[75vh]">
+        <div className="flex items-center justify-between mb-6">
+          <span className="text-base font-semibold flex-1 text-center">Bank Details</span>
+          <button onClick={onBack} className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="space-y-5 flex-1">
+          <div>
+            <p className="text-sm font-medium mb-2">Bank Name</p>
+            <button
+              onClick={() => setShowBankList(!showBankList)}
+              className="w-full flex items-center justify-between bg-transparent border-b border-border/30 py-3 text-sm"
+            >
+              <span className={bankName ? "text-foreground" : "text-muted-foreground/50"}>
+                {bankName || "Select Bank"}
+              </span>
+              <ChevronDown size={16} className="text-muted-foreground" />
+            </button>
+            {showBankList && (
+              <div className="bg-secondary rounded-xl mt-2 max-h-40 overflow-y-auto">
+                {BANKS.map((b) => (
+                  <button key={b} onClick={() => { setBankName(b); setShowBankList(false); }}
+                    className="w-full text-left px-4 py-3 text-sm hover:bg-primary/10 transition-colors border-b border-border/10 last:border-0">
+                    {b}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <p className="text-sm font-medium mb-2">Account Number</p>
+            <input
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+              placeholder="Enter 10-digit account number"
+              className="w-full bg-transparent border-b border-border/30 py-3 text-sm placeholder:text-muted-foreground/50 outline-none"
+              inputMode="numeric"
+            />
+          </div>
+
+          <div>
+            <p className="text-sm font-medium mb-2">Account Name</p>
+            <input
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value.toUpperCase())}
+              placeholder="Enter account holder name"
+              className="w-full bg-transparent border-b border-border/30 py-3 text-sm placeholder:text-muted-foreground/50 outline-none"
+            />
+          </div>
+
+          <p className="text-xs text-amber-500/80 leading-relaxed">
+            Ensure you are sending to the correct bank account to avoid loss of funds.
+          </p>
+
+          <label className="flex items-center gap-3">
+            <div
+              onClick={() => setSaveAsBeneficiary(!saveAsBeneficiary)}
+              className={`h-6 w-6 rounded-full flex items-center justify-center cursor-pointer ${saveAsBeneficiary ? "bg-success" : "bg-secondary"}`}
+            >
+              {saveAsBeneficiary && <span className="text-success-foreground text-xs">✓</span>}
+            </div>
+            <span className="text-sm">Save as beneficiary</span>
+          </label>
+        </div>
+
+        <Button className="w-full h-14 rounded-2xl text-base font-semibold mt-6"
+          disabled={!bankName || accountNumber.length < 10 || !accountName}
+          onClick={onNext}>
+          Next
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Crypto Address Step ─── */
 function AddressStep({ coinId, address, setAddress, saveAsBeneficiary, setSaveAsBeneficiary, isNgn, onBack, onNext }: {
   coinId: CoinId; address: string; setAddress: (v: string) => void; saveAsBeneficiary: boolean; setSaveAsBeneficiary: (v: boolean) => void; isNgn: boolean; onBack: () => void; onNext: () => void;
 }) {
@@ -244,15 +368,15 @@ function AddressStep({ coinId, address, setAddress, saveAsBeneficiary, setSaveAs
           </button>
         </div>
 
-        <p className="text-sm font-medium mb-2">{isNgn ? "Enter bank account or username" : "Paste address or username"}</p>
+        <p className="text-sm font-medium mb-2">Paste address or username</p>
         <input
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          placeholder={isNgn ? "Enter Account Number" : "Enter Wallet Address"}
+          placeholder="Enter Wallet Address"
           className="w-full bg-transparent border-b border-border/30 py-3 text-sm text-muted-foreground placeholder:text-muted-foreground/50 outline-none mb-4"
         />
         <p className="text-xs text-amber-500/80 mb-4 leading-relaxed">
-          {isNgn ? "Ensure you are sending to the correct account to avoid loss of funds." : "Ensure you are sending to the right address and network to avoid loss of funds."}
+          Ensure you are sending to the right address and network to avoid loss of funds.
         </p>
 
         <label className="flex items-center gap-3 mb-auto">
@@ -277,7 +401,7 @@ function AddressStep({ coinId, address, setAddress, saveAsBeneficiary, setSaveAs
 function AuthScreen({ onDone }: { onDone: () => void }) {
   const [mode, setMode] = useState<AuthMode>("faceid");
   const [pin, setPin] = useState("");
-  const CORRECT_PIN = "1234"; // dummy PIN
+  const CORRECT_PIN = "1234";
 
   useEffect(() => {
     if (mode === "faceid") {
@@ -316,7 +440,6 @@ function AuthScreen({ onDone }: { onDone: () => void }) {
     );
   }
 
-  // PIN fallback
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
       <KeyRound size={48} className="text-primary mb-6" />
