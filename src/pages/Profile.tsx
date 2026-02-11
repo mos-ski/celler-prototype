@@ -13,7 +13,7 @@ export default function ProfilePage() {
 
   const accountItems = [
     { icon: User, label: "KYC Verification", right: <span className="text-xs bg-success/20 text-success px-2 py-0.5 rounded">Verified</span> },
-    { icon: Landmark, label: "Bank Details", onClick: () => {} },
+    { icon: Landmark, label: "Bank Details", onClick: () => navigate("/bank-details") },
     { icon: Bell, label: "Notifications", onClick: () => navigate("/notifications") },
     { icon: FileText, label: "Account Statement", right: <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded">Coming Soon</span> },
   ];
@@ -26,7 +26,7 @@ export default function ProfilePage() {
 
   const otherItems = [
     { icon: theme === "dark" ? Moon : Sun, label: "Appearance", onClick: toggleTheme, right: <span className="text-xs bg-secondary text-muted-foreground px-2 py-0.5 rounded capitalize">{theme}</span> },
-    { icon: Gift, label: "Refer and Earn" },
+    { icon: Gift, label: "Refer and Earn", onClick: () => navigate("/referral") },
     { icon: HelpCircle, label: "Support" },
   ];
 

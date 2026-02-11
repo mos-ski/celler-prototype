@@ -20,6 +20,11 @@ import CoinDetail from "./pages/CoinDetail";
 import Notifications from "./pages/Notifications";
 import Withdraw from "./pages/Withdraw";
 import Receive from "./pages/Receive";
+import ManageAssets from "./pages/ManageAssets";
+import TransactionDetail from "./pages/TransactionDetail";
+import Receipt from "./pages/Receipt";
+import Referral from "./pages/Referral";
+import BankDetails from "./pages/BankDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +53,11 @@ const App = () => (
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/withdraw/:coinId" element={<Withdraw />} />
                 <Route path="/receive/:coinId" element={<Receive />} />
+                <Route path="/manage-assets" element={<ManageAssets />} />
+                <Route path="/transaction/:txId" element={<TransactionDetail />} />
+                <Route path="/receipt/:txId" element={<Receipt />} />
+                <Route path="/referral" element={<Referral />} />
+                <Route path="/bank-details" element={<BankDetails />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

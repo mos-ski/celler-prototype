@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { getCoin, type CoinId } from "@/lib/crypto";
-import { CoinIcon } from "./Dashboard";
+import CoinIcon from "@/components/CoinIcon";
 import { ArrowLeft, Copy, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
