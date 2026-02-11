@@ -173,14 +173,11 @@ export default function BuyPage() {
         </p>
       </div>
 
-      <button
-        onClick={() => usdVal > 0 && setStep("review")}
-        className={`mt-4 text-center py-3 text-base font-medium ${usdVal > 0 ? "text-foreground" : "text-muted-foreground"}`}
-      >
-        Next
-      </button>
-
-      <div className="mt-auto grid grid-cols-3 gap-2 pb-6">
+      <div className="mt-auto flex flex-col gap-2 pb-6">
+        <Button className="w-full h-14 rounded-2xl text-base font-semibold" disabled={usdVal <= 0} onClick={() => setStep("review")}>
+          Next
+        </Button>
+        <div className="grid grid-cols-3 gap-2">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"].map((key) => (
           <button
             key={key}
@@ -190,6 +187,7 @@ export default function BuyPage() {
             {key}
           </button>
         ))}
+        </div>
       </div>
     </div>
   );
