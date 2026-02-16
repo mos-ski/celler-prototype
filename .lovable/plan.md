@@ -1,100 +1,114 @@
 
 
-# 🪙 Crypto Exchange App — PRD & Implementation Plan
+# Referral System PRD
 
-## Design Theme (Inspired by Celler.app)
-- **Dark navy/black background** with subtle gradient effects
-- **Gold/amber accent colors** for CTAs and highlights
-- **Clean, modern typography** with high contrast text
-- **Card-based UI** with rounded corners and subtle borders
+## Overview
+A referral rewards program where users earn NGN 5,000 for each referred user who signs up, completes KYC verification, and makes their first trade (buy, sell, or swap).
 
----
+## Reward Structure
+- **Reward per referral**: NGN 5,000 (admin-adjustable)
+- **Trigger conditions**: Referred user must (1) sign up using referral code, (2) complete KYC verification, and (3) execute at least one trade
+- **Payout currency**: NGN (credited to Naira wallet upon approval)
 
-## Supported Coins
-BTC, ETH, USDT, BNB, SOL — with mock market prices in USD
+## Withdrawal Rules
+- **Weekly withdrawal limit**: NGN 10,000 (admin-adjustable)
+- **Process**: User submits a redemption/withdrawal request from their referral earnings balance
+- **Admin approval required**: All withdrawal requests go to a pending state and must be manually approved by an admin before funds are released to the user's NGN wallet
+- **Fraud control**: Admin can reject suspicious requests
 
-## Core Rate Logic
-- **Hardcoded NGN/$ rate**: ₦1,410/$1
-- **Mock USD market prices** for each coin (e.g., BTC = $67,500, ETH = $3,400, USDT = $1, BNB = $580, SOL = $145)
-- **All conversions flow through USD**: Coin → USD value (qty × market price) → NGN value (USD × 1410)
+## Referral Lifecycle
 
----
+```text
++------------------+     +------------------+     +------------------+
+|  User shares     | --> |  Friend signs up | --> |  Friend verifies |
+|  referral code   |     |  with code       |     |  KYC             |
++------------------+     +------------------+     +------------------+
+                                                          |
+                                                          v
++------------------+     +------------------+     +------------------+
+|  NGN 5,000 added | <-- |  Reward unlocked | <-- |  Friend makes    |
+|  to referral     |     |                  |     |  first trade     |
+|  earnings balance|     +------------------+     +------------------+
++------------------+
+         |
+         v
++------------------+     +------------------+     +------------------+
+|  User requests   | --> |  Admin reviews   | --> |  Approved: funds |
+|  withdrawal      |     |  & approves      |     |  sent to NGN     |
+|  (max 10k/week)  |     |                  |     |  wallet          |
++------------------+     +------------------+     +------------------+
+```
 
-## Pages & Features
+## Referral Page UI
 
-### 1. 🔐 Auth Pages (Mock — no real backend)
-- **Sign Up** — email, password, full name
-- **Sign In** — email, password
-- Stores "logged in" state in memory/localStorage
-- Redirects to Dashboard after auth
+### Top Section
+- Banner: "Earn NGN 5,000 per Referral"
+- Subtitle explaining the 3-step requirement (signup, verify, trade)
 
-### 2. 🏠 Dashboard
-- Welcome greeting with user name
-- **Total Wallet Balance** displayed in both USD and NGN
-- Quick-glance portfolio: list of held coins with quantities, USD value, and NGN equivalent
-- Quick action buttons: Buy, Sell, Swap
-- Recent transaction history (last 5)
+### Stats Cards
+- **Total Earned** (lifetime referral earnings)
+- **Available Balance** (withdrawable amount)
+- **Withdrawn This Week** / **Weekly Limit** (e.g., NGN 2,000 / NGN 10,000)
 
-### 3. 💰 Buy Crypto (Naira → Crypto)
-- **Step 1**: Select coin (BTC, ETH, USDT, BNB, SOL)
-- **Step 2**: Enter amount in NGN **or** USD — auto-calculates the other
-- **Calculation displayed**: Shows breakdown → NGN entered ÷ 1410 = USD → USD ÷ coin market price = quantity of coin
-- **Step 3**: Review & Confirm screen showing full breakdown
-- **Step 4**: Success screen with transaction receipt
-- Transaction saved to history
+### Referral Code & Link
+- Display unique code with copy button
+- Full referral link with copy button
+- Share button (Web Share API)
 
-### 4. 💸 Sell Crypto (Crypto → Naira)
-- **Step 1**: Select coin to sell from wallet
-- **Step 2**: Enter quantity of coin **or** target NGN amount
-- **Calculation displayed**: Coin qty × market price = USD value → USD × 1410 = NGN payout
-- **Step 3**: Review & Confirm
-- **Step 4**: Success with receipt
-- Updates wallet balance, saves to history
+### Referral List
+Each referral entry shows:
+- Friend's name (or masked email)
+- Status badge: `Signed Up` | `Verified` | `Traded` (reward unlocked) | `Expired`
+- Date joined
+- Reward amount (greyed out until unlocked, green when earned)
 
-### 5. 🔄 Swap (Crypto → Crypto)
-- **Step 1**: Select "From" coin and "To" coin
-- **Step 2**: Enter quantity of "From" coin
-- **Calculation**: From coin qty × From market price = USD value → USD ÷ To market price = To coin quantity
-- **Step 3**: Review showing both sides of the swap
-- **Step 4**: Success with receipt
-- Updates wallet, saves to history
+### Withdrawal Section
+- "Withdraw Earnings" button
+- Amount input (capped at available balance and weekly remaining limit)
+- Shows weekly limit usage
+- Submit creates a pending request
 
-### 6. 📜 Transaction History
-- Full list of all transactions (buy, sell, swap)
-- Each entry shows: type, coin(s), amounts, NGN/USD values, date/time, status
-- Filter by type (Buy/Sell/Swap)
+### Withdrawal History
+- List of past redemption requests
+- Each shows: amount, date, status (`Pending` | `Approved` | `Rejected`)
 
-### 7. 👤 Profile Page
-- User info display
-- Mock "Bank Account" for NGN deposits (display only)
-- Logout button
+## Admin-Adjustable Variables (stored in localStorage for prototype)
+- `referralRewardNgn`: NGN 5,000 (default)
+- `weeklyWithdrawLimitNgn`: NGN 10,000 (default)
+- These are read from a config store so they can be changed from an admin settings page later
 
----
+## Data Model (localStorage)
 
-## Conversion Examples (shown in UI)
+**Referral Config**:
+```text
+{
+  rewardAmountNgn: 5000,
+  weeklyWithdrawLimitNgn: 10000
+}
+```
 
-**Buy Example:**
-> Buying $10 of USDT
-> USDT market price: $1.00
-> USD amount: $10.00
-> NGN cost: $10 × ₦1,410 = **₦14,100**
-> You receive: **10 USDT**
+**Referrals Array**:
+```text
+{
+  id, referredName, referredEmail,
+  dateJoined, status: "signed_up" | "verified" | "traded",
+  rewardUnlocked: boolean, rewardAmountNgn
+}
+```
 
-**Sell Example:**
-> Selling 0.001 BTC
-> BTC market price: $67,500
-> USD value: 0.001 × $67,500 = $67.50
-> NGN payout: $67.50 × ₦1,410 = **₦95,175**
+**Withdrawal Requests Array**:
+```text
+{
+  id, amountNgn, dateRequested,
+  status: "pending" | "approved" | "rejected",
+  dateResolved?
+}
+```
 
-**Swap Example:**
-> Swapping 0.1 ETH → SOL
-> ETH price: $3,400 → 0.1 ETH = $340
-> SOL price: $145 → $340 ÷ $145 = **2.3448 SOL**
-
----
-
-## Data Storage
-- All data stored in **localStorage** (mock prototype)
-- Pre-seeded wallet with some starting balances so the app feels alive
-- All buttons functional, all flows complete end-to-end
+## Technical Approach
+- Extend `src/lib/crypto.ts` with referral store functions (config, referrals list, withdrawal requests)
+- Rebuild `src/pages/Referral.tsx` with the full UI described above
+- Add mock referral data (mix of statuses) so the page feels alive
+- Withdrawal approval will credit the user's NGN wallet balance via `store.updateWalletCoin("NGN", amount)`
+- No admin page in this phase -- approvals can be simulated with mock data
 
