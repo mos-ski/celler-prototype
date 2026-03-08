@@ -79,6 +79,14 @@ const App = () => (
                 <Route path="/support" element={<Support />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
               </Route>
+              {/* Admin routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="customers" element={<AdminCustomers />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="referrals" element={<AdminReferrals />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
