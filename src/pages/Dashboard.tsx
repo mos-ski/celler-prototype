@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { store, COINS, coinToUsd, usdToNgn, formatUsd, formatNgn, formatCoin, type CoinId } from "@/lib/crypto";
 import CoinIcon from "@/components/CoinIcon";
-import { Plus, Minus, ArrowDown, ArrowUp, Gift, Bell, X, Search } from "lucide-react";
+import { Plus, ArrowDown, ArrowUp, ArrowLeftRight, Gift, Bell, X, Search } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { DashboardSkeleton } from "@/components/LoadingSkeleton";
 import PageTransition from "@/components/PageTransition";
