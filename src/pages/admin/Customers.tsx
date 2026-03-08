@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Copy, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { customers, customerTabs } from "@/data/adminMockData";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
