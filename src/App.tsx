@@ -32,6 +32,9 @@ import Appearance from "./pages/Appearance";
 import Support from "./pages/Support";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
+import Giftcards from "./pages/Giftcards";
+import GiftcardSell from "./pages/GiftcardSell";
+import GiftcardOrders from "./pages/GiftcardOrders";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCustomers from "./pages/admin/Customers";
 import AdminOrders from "./pages/admin/Orders";
@@ -74,6 +77,9 @@ const App = () => (
                 <Route path="/appearance" element={<Appearance />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
+                <Route path="/giftcards" element={<Giftcards />} />
+                <Route path="/giftcard/sell/:brandId" element={<GiftcardSell />} />
+                <Route path="/giftcard-orders" element={<GiftcardOrders />} />
               </Route>
               {/* Admin routes */}
               <Route path="/admin" element={<AdminLayout />}>
