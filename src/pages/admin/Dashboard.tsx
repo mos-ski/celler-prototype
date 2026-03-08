@@ -68,7 +68,7 @@ const AdminDashboard = () => {
               </button>
             )}
             {pendingReferralWithdrawals > 0 && (
-              <button onClick={() => navigate("/admin/referral-withdrawals")} className="px-3 py-1.5 rounded-lg border border-yellow-500 text-yellow-500 text-sm font-medium hover:bg-yellow-500/10">
+              <button onClick={() => navigate("/admin/referrals")} className="px-3 py-1.5 rounded-lg border border-yellow-500 text-yellow-500 text-sm font-medium hover:bg-yellow-500/10">
                 Review Withdrawals
               </button>
             )}
