@@ -37,10 +37,10 @@ import GiftcardSell from "./pages/GiftcardSell";
 import GiftcardOrders from "./pages/GiftcardOrders";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCustomers from "./pages/admin/Customers";
+import AdminCustomerDetail from "./pages/admin/CustomerDetail";
 import AdminOrders from "./pages/admin/Orders";
 import AdminGiftcardOrders from "./pages/admin/GiftcardOrders";
 import AdminReferrals from "./pages/admin/Referrals";
-import AdminReferralWithdrawals from "./pages/admin/ReferralWithdrawals";
 import AdminSettings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
