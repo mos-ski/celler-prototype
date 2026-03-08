@@ -12,8 +12,6 @@ import Welcome from "./pages/Welcome";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
-import Buy from "./pages/Buy";
-import Sell from "./pages/Sell";
 import Swap from "./pages/Swap";
 import History from "./pages/History";
 import Profile from "./pages/Profile";
@@ -57,8 +55,6 @@ const App = () => (
               <Route path="/signup" element={<SignUp />} />
               <Route element={<AppLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/buy" element={<Buy />} />
-                <Route path="/sell" element={<Sell />} />
                 <Route path="/swap" element={<Swap />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/profile" element={<Profile />} />

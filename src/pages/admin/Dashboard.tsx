@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, TrendingUp, TrendingDown } from "lucide-react";
-import { dashboardStats, adminOrders, revenueChartData, sparklineData, coinIcons } from "@/data/adminMockData";
+import { dashboardStats, adminOrders, revenueChartData, sparklineData } from "@/data/adminMockData";
+import CoinIcon from "@/components/CoinIcon";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LineChart, Line, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { useNavigate } from "react-router-dom";
@@ -134,9 +135,7 @@ const AdminDashboard = () => {
                 <TableRow key={order.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm">
-                        {coinIcons[order.coin] || order.coin}
-                      </span>
+                      <CoinIcon coinId={order.coin} size={32} />
                       <span className="font-medium text-foreground">{order.coin}</span>
                     </div>
                   </TableCell>
