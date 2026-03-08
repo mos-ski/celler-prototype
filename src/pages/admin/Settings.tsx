@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { adminUser } from "@/data/adminMockData";
+import { referralStore, ReferralConfig } from "@/lib/referral";
+import { formatNgn } from "@/lib/crypto";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Save } from "lucide-react";
 
-const settingsTabs = ["General", "Security", "Notifications"];
+const settingsTabs = ["General", "Referrals", "Notifications"];
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState("General");
@@ -10,9 +15,17 @@ const AdminSettings = () => {
   const [lastName, setLastName] = useState(adminUser.lastName);
   const [isEditing, setIsEditing] = useState(false);
 
+  // Referral config
+  const [referralConfig, setReferralConfig] = useState<ReferralConfig>(referralStore.getConfig());
+
   const handleSave = () => {
     toast.success("Settings saved successfully!");
     setIsEditing(false);
+  };
+
+  const handleSaveReferralConfig = () => {
+    referralStore.setConfig(referralConfig);
+    toast.success("Referral settings saved!");
   };
 
   return (
@@ -83,10 +96,85 @@ const AdminSettings = () => {
         </div>
       )}
 
-      {activeTab !== "General" && (
+      {activeTab === "Referrals" && (
+        <div className="max-w-lg space-y-6">
+          <div>
+            <h3 className="text-base font-semibold text-foreground mb-4">Referral Program Settings</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Configure the referral reward amount and weekly withdrawal limits. Changes apply immediately.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-muted-foreground">
+                Reward per Referral (NGN)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₦</span>
+                <Input
+                  type="number"
+                  value={referralConfig.rewardAmountNgn}
+                  onChange={(e) => setReferralConfig({ ...referralConfig, rewardAmountNgn: Number(e.target.value) })}
+                  className="pl-8"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Current: {formatNgn(referralConfig.rewardAmountNgn)} per successful referral
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-muted-foreground">
+                Weekly Withdrawal Limit (NGN)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₦</span>
+                <Input
+                  type="number"
+                  value={referralConfig.weeklyWithdrawLimitNgn}
+                  onChange={(e) => setReferralConfig({ ...referralConfig, weeklyWithdrawLimitNgn: Number(e.target.value) })}
+                  className="pl-8"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Current: {formatNgn(referralConfig.weeklyWithdrawLimitNgn)} max per week
+              </p>
+            </div>
+
+            <Button onClick={handleSaveReferralConfig} className="mt-4">
+              <Save className="h-4 w-4 mr-2" /> Save Referral Settings
+            </Button>
+          </div>
+
+          <div className="rounded-xl border border-border bg-muted/50 p-4 mt-6">
+            <h4 className="font-medium text-foreground mb-2">Current Statistics</h4>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-muted-foreground">Total Referrals</p>
+                <p className="font-bold text-foreground">{referralStore.getReferrals().length}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Total Earned</p>
+                <p className="font-bold text-green-500">{formatNgn(referralStore.getTotalEarned())}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Pending Withdrawals</p>
+                <p className="font-bold text-yellow-500">{referralStore.getWithdrawals().filter(w => w.status === "pending").length}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Total Withdrawn</p>
+                <p className="font-bold text-foreground">{formatNgn(referralStore.getTotalWithdrawnApproved())}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "Notifications" && (
         <div className="flex flex-col items-center justify-center rounded-xl border border-border bg-card py-16">
-          <p className="text-lg font-medium text-muted-foreground">{activeTab}</p>
-          <p className="mt-1 text-sm text-muted-foreground">Manage your {activeTab.toLowerCase()} settings</p>
+          <p className="text-lg font-medium text-muted-foreground">Notifications</p>
+          <p className="mt-1 text-sm text-muted-foreground">Manage your notification settings</p>
         </div>
       )}
     </div>
