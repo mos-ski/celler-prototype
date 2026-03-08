@@ -38,7 +38,9 @@ import GiftcardOrders from "./pages/GiftcardOrders";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCustomers from "./pages/admin/Customers";
 import AdminOrders from "./pages/admin/Orders";
+import AdminGiftcardOrders from "./pages/admin/GiftcardOrders";
 import AdminReferrals from "./pages/admin/Referrals";
+import AdminReferralWithdrawals from "./pages/admin/ReferralWithdrawals";
 import AdminSettings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
@@ -86,7 +88,9 @@ const App = () => (
                 <Route index element={<AdminDashboard />} />
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="orders" element={<AdminOrders />} />
+                <Route path="giftcard-orders" element={<AdminGiftcardOrders />} />
                 <Route path="referrals" element={<AdminReferrals />} />
+                <Route path="referral-withdrawals" element={<AdminReferralWithdrawals />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />

@@ -1,11 +1,14 @@
-import { useState } from "react";
-import { Eye, EyeOff, TrendingUp, TrendingDown } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Eye, EyeOff, TrendingUp, TrendingDown, Gift, Users } from "lucide-react";
 import { dashboardStats, adminOrders, revenueChartData, sparklineData } from "@/data/adminMockData";
+import { giftcardStore } from "@/data/giftcardData";
+import { referralStore } from "@/lib/referral";
 import CoinIcon from "@/components/CoinIcon";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LineChart, Line, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { useNavigate } from "react-router-dom";
 import { formatNgn } from "@/lib/crypto";
+import { Badge } from "@/components/ui/badge";
 
 const MiniSparkline = ({ data }: { data: number[] }) => {
   const chartData = data.map((v, i) => ({ i, v }));
@@ -24,6 +27,15 @@ const AdminDashboard = () => {
   const [showBalance, setShowBalance] = useState(false);
   const navigate = useNavigate();
 
+  // Live data from stores
+  const giftcardOrders = useMemo(() => giftcardStore.getOrders(), []);
+  const referrals = useMemo(() => referralStore.getReferrals(), []);
+  const referralWithdrawals = useMemo(() => referralStore.getWithdrawals(), []);
+
+  const pendingGiftcards = giftcardOrders.filter(o => o.status === "pending").length;
+  const pendingReferralWithdrawals = referralWithdrawals.filter(w => w.status === "pending").length;
+  const totalGiftcardVolume = giftcardOrders.filter(o => o.status === "approved").reduce((sum, o) => sum + o.ngnPayout, 0);
+
   const statCards = [
     { label: "Registered Users", value: dashboardStats.totalRegisteredUsers.toLocaleString(), change: +12, sparkline: sparklineData.registeredUsers },
     { label: "Verified Users", value: dashboardStats.totalVerifiedUsers.toLocaleString(), change: +5, sparkline: null },
@@ -33,6 +45,37 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Pending Actions Alert */}
+      {(pendingGiftcards > 0 || pendingReferralWithdrawals > 0) && (
+        <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
+              <Gift className="h-5 w-5 text-yellow-500" />
+            </div>
+            <div>
+              <p className="font-medium text-foreground">Pending Actions Required</p>
+              <p className="text-sm text-muted-foreground">
+                {pendingGiftcards > 0 && `${pendingGiftcards} giftcard order${pendingGiftcards > 1 ? "s" : ""}`}
+                {pendingGiftcards > 0 && pendingReferralWithdrawals > 0 && " • "}
+                {pendingReferralWithdrawals > 0 && `${pendingReferralWithdrawals} referral withdrawal${pendingReferralWithdrawals > 1 ? "s" : ""}`}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            {pendingGiftcards > 0 && (
+              <button onClick={() => navigate("/admin/giftcard-orders")} className="px-3 py-1.5 rounded-lg bg-yellow-500 text-white text-sm font-medium hover:bg-yellow-600">
+                Review Giftcards
+              </button>
+            )}
+            {pendingReferralWithdrawals > 0 && (
+              <button onClick={() => navigate("/admin/referral-withdrawals")} className="px-3 py-1.5 rounded-lg border border-yellow-500 text-yellow-500 text-sm font-medium hover:bg-yellow-500/10">
+                Review Withdrawals
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Top: Payout + Stats */}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-6">
@@ -54,8 +97,8 @@ const AdminDashboard = () => {
               <p className="text-lg font-bold text-foreground">{dashboardStats.totalTransactions.toLocaleString()}</p>
             </div>
             <div className="rounded-lg bg-muted p-2">
-              <p className="text-xs text-muted-foreground">Volume (USD)</p>
-              <p className="text-lg font-bold text-foreground">${dashboardStats.totalVolume.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">GC Volume</p>
+              <p className="text-lg font-bold text-foreground">{formatNgn(totalGiftcardVolume)}</p>
             </div>
           </div>
         </div>
