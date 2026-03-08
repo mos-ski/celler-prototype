@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { to: "/dashboard", label: "Home", icon: Home },
   { to: "/history", label: "History", icon: Clock },
   { to: "/swap", label: "Swap", icon: ArrowLeftRight, fab: true },
-  { id: "wallet", label: "Wallet", icon: Wallet },
+  { to: "/giftcards", label: "Giftcard", icon: Gift },
   { to: "/profile", label: "Profile", icon: User },
 ];
 
