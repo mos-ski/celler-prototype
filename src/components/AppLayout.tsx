@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Home, Clock, ArrowLeftRight, Wallet, User, X, Search } from "lucide-react";
+import { Home, Clock, ArrowLeftRight, Gift, User, X, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { store, COINS, coinToUsd, formatUsd, formatNgn, formatCoin, type CoinId } from "@/lib/crypto";
 import CoinIcon from "@/components/CoinIcon";
