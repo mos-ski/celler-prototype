@@ -34,6 +34,11 @@ import Appearance from "./pages/Appearance";
 import Support from "./pages/Support";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminCustomers from "./pages/admin/Customers";
+import AdminOrders from "./pages/admin/Orders";
+import AdminReferrals from "./pages/admin/Referrals";
+import AdminSettings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
