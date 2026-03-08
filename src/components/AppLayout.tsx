@@ -49,7 +49,7 @@ export default function AppLayout() {
 
       {showNav && (
         <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-border/50 bg-background/95 backdrop-blur-md safe-area-pb">
-          <div className="mx-auto flex max-w-lg items-end justify-around px-2 pt-2 pb-2">
+          <div className="mx-auto flex max-w-[430px] items-end justify-around px-2 pt-2 pb-2">
             {NAV_ITEMS.map((n) => {
               const isWallet = n.id === "wallet";
               const active = !isWallet && location.pathname === n.to;
