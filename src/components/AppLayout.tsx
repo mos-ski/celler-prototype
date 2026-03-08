@@ -22,8 +22,8 @@ export default function AppLayout() {
   const { isLoggedIn } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [walletOpen, setWalletOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [walletOpen] = useState(false);
+  const [search] = useState("");
 
   if (!isLoggedIn) return <Navigate to="/signin" replace />;
 
