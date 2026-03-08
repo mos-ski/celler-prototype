@@ -43,7 +43,7 @@ export default function AppLayout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <main className={cn("mx-auto w-full max-w-lg flex-1 px-4 pt-2", showNav ? "pb-24" : "pb-4")}>
+      <main className={cn("mx-auto w-full max-w-[430px] flex-1 px-4 pt-2", showNav ? "pb-24" : "pb-4")}>
         <Outlet />
       </main>
 
