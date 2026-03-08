@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import AppLayout from "@/components/AppLayout";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import Splash from "./pages/Splash";
 import Welcome from "./pages/Welcome";
 import SignIn from "./pages/SignIn";
@@ -33,6 +34,11 @@ import Appearance from "./pages/Appearance";
 import Support from "./pages/Support";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminCustomers from "./pages/admin/Customers";
+import AdminOrders from "./pages/admin/Orders";
+import AdminReferrals from "./pages/admin/Referrals";
+import AdminSettings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +78,14 @@ const App = () => (
                 <Route path="/appearance" element={<Appearance />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
+              </Route>
+              {/* Admin routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="customers" element={<AdminCustomers />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="referrals" element={<AdminReferrals />} />
+                <Route path="settings" element={<AdminSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
