@@ -45,7 +45,7 @@ const Customers = () => {
           </TableHeader>
           <TableBody>
             {customers.map((c) => (
-              <TableRow key={c.id} className="cursor-pointer hover:bg-accent/50">
+              <TableRow key={c.id} className="cursor-pointer hover:bg-accent/50" onClick={() => navigate(`/admin/customers/${c.id}`)}>
                 <TableCell className="text-foreground">{c.sn}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
