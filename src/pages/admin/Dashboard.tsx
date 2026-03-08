@@ -1,11 +1,14 @@
-import { useState } from "react";
-import { Eye, EyeOff, TrendingUp, TrendingDown } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Eye, EyeOff, TrendingUp, TrendingDown, Gift, Users } from "lucide-react";
 import { dashboardStats, adminOrders, revenueChartData, sparklineData } from "@/data/adminMockData";
+import { giftcardStore } from "@/data/giftcardData";
+import { referralStore } from "@/lib/referral";
 import CoinIcon from "@/components/CoinIcon";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LineChart, Line, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { useNavigate } from "react-router-dom";
 import { formatNgn } from "@/lib/crypto";
+import { Badge } from "@/components/ui/badge";
 
 const MiniSparkline = ({ data }: { data: number[] }) => {
   const chartData = data.map((v, i) => ({ i, v }));
