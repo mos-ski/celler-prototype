@@ -158,10 +158,9 @@ export default function Dashboard() {
         {/* Quick Actions */}
         <div className="flex justify-center gap-4">
           {[
-            { icon: Plus, label: "Buy", to: "/buy" },
-            { icon: Minus, label: "Sell", to: "/sell" },
             { icon: ArrowDown, label: "Deposit", action: "deposit" as const },
             { icon: ArrowUp, label: "Withdraw", action: "withdraw" as const },
+            { icon: ArrowLeftRight, label: "Swap", to: "/swap" },
             { icon: Gift, label: "Earn", to: "/referral", accent: true },
           ].map((a) => (
             <button

@@ -43,9 +43,7 @@ const Orders = () => {
               <TableRow key={order.id}>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm">
-                      {coinIcons[order.coin] || order.coin}
-                    </span>
+                    <CoinIcon coinId={order.coin} size={32} />
                     <span className="font-medium text-foreground">{order.coin}</span>
                   </div>
                 </TableCell>
