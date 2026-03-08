@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { adminOrders, orderTabs, coinIcons } from "@/data/adminMockData";
+import { adminOrders, orderTabs } from "@/data/adminMockData";
+import CoinIcon from "@/components/CoinIcon";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatNgn } from "@/lib/crypto";
 
