@@ -9,13 +9,17 @@ const routeTitles: Record<string, string> = {
   "/admin/giftcard-orders": "Giftcard Orders",
   "/admin/customers": "Customers",
   "/admin/referrals": "Referrals",
-  "/admin/referral-withdrawals": "Referral Withdrawals",
   "/admin/settings": "Settings",
 };
 
+function getTitle(pathname: string): string {
+  if (pathname.startsWith("/admin/customers/")) return "Customer Detail";
+  return routeTitles[pathname] || "Admin";
+}
+
 export function AdminLayout() {
   const location = useLocation();
-  const title = routeTitles[location.pathname] || "Admin";
+  const title = getTitle(location.pathname);
 
   return (
     <SidebarProvider>

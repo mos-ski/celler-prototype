@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { adminUser } from "@/data/adminMockData";
 import { referralStore, ReferralConfig } from "@/lib/referral";
+import { feeStore, FeeConfig } from "@/data/feeConfig";
 import { formatNgn } from "@/lib/crypto";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 
-const settingsTabs = ["General", "Referrals", "Notifications"];
+const settingsTabs = ["General", "Fees", "Referrals", "Notifications"];
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState("General");
@@ -17,6 +18,8 @@ const AdminSettings = () => {
 
   // Referral config
   const [referralConfig, setReferralConfig] = useState<ReferralConfig>(referralStore.getConfig());
+  // Fee config
+  const [feeConfig, setFeeConfig] = useState<FeeConfig>(feeStore.getConfig());
 
   const handleSave = () => {
     toast.success("Settings saved successfully!");
@@ -27,6 +30,18 @@ const AdminSettings = () => {
     referralStore.setConfig(referralConfig);
     toast.success("Referral settings saved!");
   };
+
+  const handleSaveFeeConfig = () => {
+    feeStore.setConfig(feeConfig);
+    toast.success("Fee settings saved!");
+  };
+
+  const feeFields: { key: keyof FeeConfig; label: string; description: string }[] = [
+    { key: "tradeFeePercent", label: "Trade Fee (%)", description: "Commission on buy/sell orders" },
+    { key: "withdrawalFeePercent", label: "Withdrawal Fee (%)", description: "Fee on crypto withdrawals" },
+    { key: "swapFeePercent", label: "Swap Fee (%)", description: "Fee on crypto-to-crypto swaps" },
+    { key: "ngnRateMarkupPercent", label: "NGN Rate Markup (%)", description: "Markup over mid-market NGN/USD rate" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -96,6 +111,36 @@ const AdminSettings = () => {
         </div>
       )}
 
+      {activeTab === "Fees" && (
+        <div className="max-w-lg space-y-6">
+          <div>
+            <h3 className="text-base font-semibold text-foreground mb-2">Fee Configuration</h3>
+            <p className="text-sm text-muted-foreground">Set trading, withdrawal, and conversion fees. Changes apply immediately to new orders.</p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-6 space-y-5">
+            {feeFields.map(({ key, label, description }) => (
+              <div key={key}>
+                <label className="mb-1 block text-sm font-medium text-muted-foreground">{label}</label>
+                <div className="relative">
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={feeConfig[key]}
+                    onChange={(e) => setFeeConfig({ ...feeConfig, [key]: parseFloat(e.target.value) || 0 })}
+                    className="pr-8"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">{description}</p>
+              </div>
+            ))}
+            <Button onClick={handleSaveFeeConfig}>
+              <Save className="h-4 w-4 mr-2" /> Save Fee Settings
+            </Button>
+          </div>
+        </div>
+      )}
+
       {activeTab === "Referrals" && (
         <div className="max-w-lg space-y-6">
           <div>
@@ -156,7 +201,7 @@ const AdminSettings = () => {
               </div>
               <div>
                 <p className="text-muted-foreground">Total Earned</p>
-                <p className="font-bold text-green-500">{formatNgn(referralStore.getTotalEarned())}</p>
+                <p className="font-bold text-success">{formatNgn(referralStore.getTotalEarned())}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Pending Withdrawals</p>

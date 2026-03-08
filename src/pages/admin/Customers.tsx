@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Copy, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { customers, customerTabs } from "@/data/adminMockData";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 
 const Customers = () => {
   const [activeTab, setActiveTab] = useState("All Customers");
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
@@ -45,7 +47,7 @@ const Customers = () => {
           </TableHeader>
           <TableBody>
             {customers.map((c) => (
-              <TableRow key={c.id} className="cursor-pointer hover:bg-accent/50">
+              <TableRow key={c.id} className="cursor-pointer hover:bg-accent/50" onClick={() => navigate(`/admin/customers/${c.id}`)}>
                 <TableCell className="text-foreground">{c.sn}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">

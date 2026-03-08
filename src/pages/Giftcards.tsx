@@ -78,9 +78,15 @@ export default function Giftcards() {
                   alt={brand.name}
                   className="h-8 w-8 object-contain"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
+                    const el = e.target as HTMLImageElement;
+                    el.style.display = "none";
+                    const fallback = el.parentElement?.querySelector(".gc-fallback");
+                    if (fallback) (fallback as HTMLElement).style.display = "flex";
                   }}
                 />
+                <span className="gc-fallback hidden h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary text-sm font-bold">
+                  {brand.name[0]}
+                </span>
               </div>
               <span className="text-[11px] font-medium text-center leading-tight">{brand.name}</span>
             </button>

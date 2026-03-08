@@ -46,8 +46,25 @@ export default function GiftcardOrders() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-background flex items-center justify-center p-1.5">
-                      {brand && (
-                        <img src={brand.logo} alt={brand.name} className="h-7 w-7 object-contain" />
+                      {brand ? (
+                        <>
+                          <img
+                            src={brand.logo}
+                            alt={brand.name}
+                            className="h-7 w-7 object-contain"
+                            onError={(e) => {
+                              const el = e.target as HTMLImageElement;
+                              el.style.display = "none";
+                              const fb = el.parentElement?.querySelector(".gc-fb");
+                              if (fb) (fb as HTMLElement).style.display = "flex";
+                            }}
+                          />
+                          <span className="gc-fb hidden h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold">
+                            {brand.name[0]}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-xs font-bold text-muted-foreground">?</span>
                       )}
                     </div>
                     <div>

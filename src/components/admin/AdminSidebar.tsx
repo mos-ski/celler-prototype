@@ -1,8 +1,8 @@
 import {
-  Home, Wallet, DollarSign, Users, Gift, Settings, BarChart3, FileText, CreditCard
+  Home, DollarSign, Users, Gift, Settings, CreditCard, LogOut
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -24,7 +24,6 @@ const sections = [
     items: [
       { title: "Customers", url: "/admin/customers", icon: Users },
       { title: "Referrals", url: "/admin/referrals", icon: Gift },
-      { title: "Ref. Withdrawals", url: "/admin/referral-withdrawals", icon: Wallet },
     ],
   },
   {
@@ -39,6 +38,7 @@ export function AdminSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
 
   const isActive = (path: string) =>
@@ -87,19 +87,26 @@ export function AdminSidebar() {
         ))}
       </SidebarContent>
 
-      {!collapsed && (
-        <div className="mt-auto border-t border-border">
-          <div className="flex items-center gap-3 px-4 py-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold text-foreground">
-              {adminUser.firstName[0]}
-            </div>
+      <div className="mt-auto border-t border-border">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold text-foreground">
+            {adminUser.firstName[0]}
+          </div>
+          {!collapsed && (
             <div className="flex-1 overflow-hidden">
               <p className="truncate text-sm font-medium text-foreground">{adminUser.firstName}</p>
               <p className="truncate text-xs text-muted-foreground">{adminUser.email}</p>
             </div>
-          </div>
+          )}
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+            title="Exit to user app"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+          </button>
         </div>
-      )}
+      </div>
     </Sidebar>
   );
 }
