@@ -88,7 +88,9 @@ const App = () => (
                 <Route index element={<AdminDashboard />} />
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="orders" element={<AdminOrders />} />
+                <Route path="giftcard-orders" element={<AdminGiftcardOrders />} />
                 <Route path="referrals" element={<AdminReferrals />} />
+                <Route path="referral-withdrawals" element={<AdminReferralWithdrawals />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />

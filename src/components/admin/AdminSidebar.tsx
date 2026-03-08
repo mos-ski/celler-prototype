@@ -1,5 +1,5 @@
 import {
-  Home, Wallet, DollarSign, Users, Gift, Settings, BarChart3, FileText
+  Home, Wallet, DollarSign, Users, Gift, Settings, BarChart3, FileText, CreditCard
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -16,6 +16,7 @@ const sections = [
     items: [
       { title: "Overview", url: "/admin", icon: Home },
       { title: "Orders", url: "/admin/orders", icon: DollarSign, badge: 58 },
+      { title: "Giftcard Orders", url: "/admin/giftcard-orders", icon: CreditCard },
     ],
   },
   {
@@ -23,6 +24,7 @@ const sections = [
     items: [
       { title: "Customers", url: "/admin/customers", icon: Users },
       { title: "Referrals", url: "/admin/referrals", icon: Gift },
+      { title: "Ref. Withdrawals", url: "/admin/referral-withdrawals", icon: Wallet },
     ],
   },
   {

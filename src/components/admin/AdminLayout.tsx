@@ -6,8 +6,10 @@ import { AdminHeader } from "./AdminHeader";
 const routeTitles: Record<string, string> = {
   "/admin": "Dashboard",
   "/admin/orders": "Orders",
+  "/admin/giftcard-orders": "Giftcard Orders",
   "/admin/customers": "Customers",
   "/admin/referrals": "Referrals",
+  "/admin/referral-withdrawals": "Referral Withdrawals",
   "/admin/settings": "Settings",
 };
 
