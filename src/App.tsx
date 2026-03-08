@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import AppLayout from "@/components/AppLayout";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import Splash from "./pages/Splash";
 import Welcome from "./pages/Welcome";
 import SignIn from "./pages/SignIn";
