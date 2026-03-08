@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 const Customers = () => {
   const [activeTab, setActiveTab] = useState("All Customers");
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">

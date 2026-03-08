@@ -19,7 +19,7 @@ function getTitle(pathname: string): string {
 
 export function AdminLayout() {
   const location = useLocation();
-  const title = routeTitles[location.pathname] || "Admin";
+  const title = getTitle(location.pathname);
 
   return (
     <SidebarProvider>

@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Search, Bell } from "lucide-react";
+import { Search, LogOut } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { AdminNotifications } from "./AdminNotifications";
+import { useNavigate } from "react-router-dom";
 
 interface AdminHeaderProps {
   title: string;
@@ -8,6 +10,11 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ title }: AdminHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate("/dashboard");
+  };
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border bg-background px-4 md:px-6">
@@ -26,8 +33,13 @@ export function AdminHeader({ title }: AdminHeaderProps) {
             className="h-9 w-56 rounded-lg border border-border bg-background pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-ring"
           />
         </div>
-        <button className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
-          <Bell className="h-4 w-4" />
+        <AdminNotifications />
+        <button
+          onClick={handleLogout}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+          title="Exit to user app"
+        >
+          <LogOut className="h-4 w-4" />
         </button>
       </div>
     </header>
