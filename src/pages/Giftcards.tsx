@@ -88,7 +88,6 @@ export default function Giftcards() {
                   {brand.name[0]}
                 </span>
               </div>
-              </div>
               <span className="text-[11px] font-medium text-center leading-tight">{brand.name}</span>
             </button>
           ))}
