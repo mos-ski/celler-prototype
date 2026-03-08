@@ -77,6 +77,9 @@ const App = () => (
                 <Route path="/appearance" element={<Appearance />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
+                <Route path="/giftcards" element={<Giftcards />} />
+                <Route path="/giftcard/sell/:brandId" element={<GiftcardSell />} />
+                <Route path="/giftcard-orders" element={<GiftcardOrders />} />
               </Route>
               {/* Admin routes */}
               <Route path="/admin" element={<AdminLayout />}>
