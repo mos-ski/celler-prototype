@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { to: "/profile", label: "Profile", icon: User },
 ];
 
-const SHOW_NAV_PAGES = ["/dashboard", "/history", "/profile"];
+const SHOW_NAV_PAGES = ["/dashboard", "/history", "/profile", "/giftcards"];
 
 export default function AppLayout() {
   const { isLoggedIn } = useAuth();
