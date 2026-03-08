@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, TrendingUp, TrendingDown } from "lucide-react";
-import { dashboardStats, adminOrders, revenueChartData, sparklineData, coinIcons } from "@/data/adminMockData";
+import { dashboardStats, adminOrders, revenueChartData, sparklineData } from "@/data/adminMockData";
+import CoinIcon from "@/components/CoinIcon";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { LineChart, Line, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { useNavigate } from "react-router-dom";
