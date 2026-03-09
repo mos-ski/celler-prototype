@@ -38,10 +38,12 @@ import GiftcardOrders from "./pages/GiftcardOrders";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCustomers from "./pages/admin/Customers";
 import AdminCustomerDetail from "./pages/admin/CustomerDetail";
-import AdminOrders from "./pages/admin/Orders";
+import AdminTransactions from "./pages/admin/Orders";
 import AdminGiftcardOrders from "./pages/admin/GiftcardOrders";
 import AdminReferrals from "./pages/admin/Referrals";
 import AdminSettings from "./pages/admin/Settings";
+import AdminKYC from "./pages/admin/KYC";
+import AdminPushNotifications from "./pages/admin/PushNotifications";
 
 const queryClient = new QueryClient();
 
@@ -88,9 +90,12 @@ const App = () => (
                 <Route index element={<AdminDashboard />} />
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="customers/:customerId" element={<AdminCustomerDetail />} />
-                <Route path="orders" element={<AdminOrders />} />
+                <Route path="orders" element={<AdminTransactions />} />
+                <Route path="transactions" element={<AdminTransactions />} />
                 <Route path="giftcard-orders" element={<AdminGiftcardOrders />} />
                 <Route path="referrals" element={<AdminReferrals />} />
+                <Route path="kyc" element={<AdminKYC />} />
+                <Route path="notifications" element={<AdminPushNotifications />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />

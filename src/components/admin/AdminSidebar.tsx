@@ -1,5 +1,5 @@
 import {
-  Home, DollarSign, Users, Gift, Settings, CreditCard, LogOut
+  Home, ArrowLeftRight, Users, Gift, Settings, CreditCard, LogOut, Shield, Bell
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,7 +15,7 @@ const sections = [
     label: "DASHBOARD",
     items: [
       { title: "Overview", url: "/admin", icon: Home },
-      { title: "Orders", url: "/admin/orders", icon: DollarSign, badge: 58 },
+      { title: "Transactions", url: "/admin/transactions", icon: ArrowLeftRight },
       { title: "Giftcard Orders", url: "/admin/giftcard-orders", icon: CreditCard },
     ],
   },
@@ -23,12 +23,14 @@ const sections = [
     label: "USERS",
     items: [
       { title: "Customers", url: "/admin/customers", icon: Users },
+      { title: "KYC", url: "/admin/kyc", icon: Shield },
       { title: "Referrals", url: "/admin/referrals", icon: Gift },
     ],
   },
   {
     label: "SYSTEM",
     items: [
+      { title: "Push Notifications", url: "/admin/notifications", icon: Bell },
       { title: "Settings", url: "/admin/settings", icon: Settings },
     ],
   },
@@ -72,11 +74,6 @@ export function AdminSidebar() {
                       >
                         <item.icon className="h-4 w-4 shrink-0" />
                         {!collapsed && <span className="flex-1">{item.title}</span>}
-                        {!collapsed && "badge" in item && (item as { badge?: number }).badge && (
-                          <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-                            {(item as { badge?: number }).badge}
-                          </span>
-                        )}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
