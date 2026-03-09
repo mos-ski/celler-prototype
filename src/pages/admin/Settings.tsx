@@ -144,6 +144,55 @@ const AdminSettings = () => {
         </div>
       )}
 
+      {activeTab === "KYC Limits" && (
+        <div className="max-w-lg space-y-6">
+          <div>
+            <h3 className="text-base font-semibold text-foreground mb-2">KYC Tier Limits</h3>
+            <p className="text-sm text-muted-foreground">Configure trade and withdrawal limits per KYC tier. Tiers 1 & 2 are auto-approved, Tier 3 requires manual review.</p>
+          </div>
+          {Object.entries(kycConfig).map(([tier, config]) => (
+            <div key={tier} className="rounded-xl border border-border bg-card p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-foreground">{tier.replace("tier", "Tier ")}</h4>
+                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${config.approval === "auto" ? "bg-success/15 text-success" : "bg-yellow-500/15 text-yellow-500"}`}>
+                  {config.approval === "auto" ? "Auto-approve" : "Manual review"}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">{config.method}</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-muted-foreground">Trade Limit (NGN)</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₦</span>
+                    <Input
+                      type="number"
+                      value={config.tradeLimitNgn}
+                      onChange={e => setKycConfig({ ...kycConfig, [tier]: { ...config, tradeLimitNgn: Number(e.target.value) } })}
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-muted-foreground">Withdraw Limit (NGN)</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₦</span>
+                    <Input
+                      type="number"
+                      value={config.withdrawLimitNgn}
+                      onChange={e => setKycConfig({ ...kycConfig, [tier]: { ...config, withdrawLimitNgn: Number(e.target.value) } })}
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          <Button onClick={() => { kycTierConfig.setConfig(kycConfig); toast.success("KYC limits saved!"); }}>
+            <Save className="h-4 w-4 mr-2" /> Save KYC Limits
+          </Button>
+        </div>
+      )}
+
       {activeTab === "Referrals" && (
         <div className="max-w-lg space-y-6">
           <div>
