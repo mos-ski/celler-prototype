@@ -21,6 +21,8 @@ const AdminSettings = () => {
   const [referralConfig, setReferralConfig] = useState<ReferralConfig>(referralStore.getConfig());
   // Fee config
   const [feeConfig, setFeeConfig] = useState<FeeConfig>(feeStore.getConfig());
+  // KYC config
+  const [kycConfig, setKycConfig] = useState<KycConfig>(kycTierConfig.getConfig());
 
   const handleSave = () => {
     toast.success("Settings saved successfully!");
