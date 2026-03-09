@@ -2,13 +2,14 @@ import { useState } from "react";
 import { adminUser } from "@/data/adminMockData";
 import { referralStore, ReferralConfig } from "@/lib/referral";
 import { feeStore, FeeConfig } from "@/data/feeConfig";
+import { kycTierConfig, KycConfig } from "@/data/kycConfig";
 import { formatNgn } from "@/lib/crypto";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 
-const settingsTabs = ["General", "Fees", "Referrals", "Notifications"];
+const settingsTabs = ["General", "Fees", "KYC Limits", "Referrals", "Notifications"];
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState("General");
