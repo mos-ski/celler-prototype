@@ -38,10 +38,12 @@ import GiftcardOrders from "./pages/GiftcardOrders";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCustomers from "./pages/admin/Customers";
 import AdminCustomerDetail from "./pages/admin/CustomerDetail";
-import AdminOrders from "./pages/admin/Orders";
+import AdminTransactions from "./pages/admin/Orders";
 import AdminGiftcardOrders from "./pages/admin/GiftcardOrders";
 import AdminReferrals from "./pages/admin/Referrals";
 import AdminSettings from "./pages/admin/Settings";
+import AdminKYC from "./pages/admin/KYC";
+import AdminPushNotifications from "./pages/admin/PushNotifications";
 
 const queryClient = new QueryClient();
 
