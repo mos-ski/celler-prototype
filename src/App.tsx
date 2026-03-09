@@ -90,9 +90,12 @@ const App = () => (
                 <Route index element={<AdminDashboard />} />
                 <Route path="customers" element={<AdminCustomers />} />
                 <Route path="customers/:customerId" element={<AdminCustomerDetail />} />
-                <Route path="orders" element={<AdminOrders />} />
+                <Route path="orders" element={<AdminTransactions />} />
+                <Route path="transactions" element={<AdminTransactions />} />
                 <Route path="giftcard-orders" element={<AdminGiftcardOrders />} />
                 <Route path="referrals" element={<AdminReferrals />} />
+                <Route path="kyc" element={<AdminKYC />} />
+                <Route path="notifications" element={<AdminPushNotifications />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
