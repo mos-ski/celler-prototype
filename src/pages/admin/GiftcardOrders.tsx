@@ -26,7 +26,6 @@ const AdminGiftcardOrders = () => {
 
   const handleApprove = (order: GiftCardOrder) => {
     giftcardStore.updateOrderStatus(order.id, "approved");
-    // Credit user NGN wallet
     store.updateWalletCoin("NGN", order.ngnPayout);
     setOrders(giftcardStore.getOrders());
     toast.success(`Approved! ${formatNgn(order.ngnPayout)} credited to user wallet.`);
@@ -77,8 +76,8 @@ const AdminGiftcardOrders = () => {
         })}
       </div>
 
-      {/* Table */}
-      <div className="rounded-xl border border-border overflow-x-auto">
+      {/* Desktop Table */}
+      <div className="hidden md:block rounded-xl border border-border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -87,16 +86,14 @@ const AdminGiftcardOrders = () => {
               <TableHead>NGN Payout</TableHead>
               <TableHead>Rate</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="hidden md:table-cell">Date</TableHead>
+              <TableHead>Date</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredOrders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                  No orders found
-                </TableCell>
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No orders found</TableCell>
               </TableRow>
             ) : (
               filteredOrders.map((order) => (
@@ -107,49 +104,28 @@ const AdminGiftcardOrders = () => {
                       <span className="font-medium text-foreground">{order.brandName}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-foreground font-medium">
-                    ${order.amount} {order.currency}
-                  </TableCell>
-                  <TableCell className="text-foreground font-bold text-green-500">
-                    {formatNgn(order.ngnPayout)}
-                  </TableCell>
+                  <TableCell className="text-foreground font-medium">${order.amount} {order.currency}</TableCell>
+                  <TableCell className="text-foreground font-bold text-green-500">{formatNgn(order.ngnPayout)}</TableCell>
                   <TableCell className="text-muted-foreground">{order.rate}%</TableCell>
                   <TableCell>
-                    <Badge className={`${statusColor(order.status)} border-0 capitalize`}>
-                      {order.status}
-                    </Badge>
+                    <Badge className={`${statusColor(order.status)} border-0 capitalize`}>{order.status}</Badge>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
+                  <TableCell className="text-muted-foreground">
                     {new Date(order.createdAt).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       {order.cardImage && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => setSelectedOrder(order)}
-                        >
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSelectedOrder(order)}>
                           <Eye className="h-4 w-4" />
                         </Button>
                       )}
                       {order.status === "pending" && (
                         <>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-green-500 hover:text-green-600 hover:bg-green-500/10"
-                            onClick={() => handleApprove(order)}
-                          >
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-green-500 hover:text-green-600 hover:bg-green-500/10" onClick={() => handleApprove(order)}>
                             <Check className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-500/10"
-                            onClick={() => handleReject(order)}
-                          >
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-500/10" onClick={() => handleReject(order)}>
                             <X className="h-4 w-4" />
                           </Button>
                         </>
@@ -161,6 +137,57 @@ const AdminGiftcardOrders = () => {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-2">
+        {filteredOrders.length === 0 ? (
+          <div className="flex items-center justify-center py-8 text-muted-foreground text-sm">No orders found</div>
+        ) : (
+          filteredOrders.map((order) => (
+            <div key={order.id} className="rounded-xl border border-border bg-card p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <img src={getBrandLogo(order.brandId)} alt={order.brandName} className="h-8 w-8 object-contain" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{order.brandName}</p>
+                    <p className="text-xs text-muted-foreground">${order.amount} {order.currency}</p>
+                  </div>
+                </div>
+                <Badge className={`${statusColor(order.status)} border-0 capitalize text-[10px]`}>{order.status}</Badge>
+              </div>
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-border">
+                <div>
+                  <p className="text-xs text-muted-foreground">Payout</p>
+                  <p className="text-sm font-bold text-success">{formatNgn(order.ngnPayout)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Rate: {order.rate}%</p>
+                  <p className="text-[11px] text-muted-foreground">{new Date(order.createdAt).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</p>
+                </div>
+              </div>
+              {(order.status === "pending" || order.cardImage) && (
+                <div className="flex gap-2 mt-2">
+                  {order.cardImage && (
+                    <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={() => setSelectedOrder(order)}>
+                      <Eye className="h-3 w-3 mr-1" /> View Card
+                    </Button>
+                  )}
+                  {order.status === "pending" && (
+                    <>
+                      <Button size="sm" className="flex-1 h-8 text-xs" onClick={() => handleApprove(order)}>
+                        <Check className="h-3 w-3 mr-1" /> Approve
+                      </Button>
+                      <Button variant="destructive" size="sm" className="flex-1 h-8 text-xs" onClick={() => handleReject(order)}>
+                        <X className="h-3 w-3 mr-1" /> Reject
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       {/* Image Preview Dialog */}

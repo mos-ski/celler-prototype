@@ -27,7 +27,6 @@ const AdminDashboard = () => {
   const [showBalance, setShowBalance] = useState(false);
   const navigate = useNavigate();
 
-  // Live data from stores
   const giftcardOrders = useMemo(() => giftcardStore.getOrders(), []);
   const referrals = useMemo(() => referralStore.getReferrals(), []);
   const referralWithdrawals = useMemo(() => referralStore.getWithdrawals(), []);
@@ -103,7 +102,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 lg:col-span-2">
+        <div className="grid grid-cols-2 gap-4 lg:col-span-2">
           {statCards.map((stat) => (
             <div key={stat.label} className="rounded-xl border border-border bg-card p-4">
               <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
@@ -128,9 +127,9 @@ const AdminDashboard = () => {
       </div>
 
       {/* Revenue Chart */}
-      <div className="rounded-xl border border-border bg-card p-6">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold text-foreground">30-Day Revenue</h2>
-        <div className="h-56">
+        <div className="h-48 sm:h-56">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={revenueChartData}>
               <defs>
@@ -161,16 +160,18 @@ const AdminDashboard = () => {
             View all →
           </button>
         </div>
-        <div className="rounded-xl border border-border overflow-x-auto">
+
+        {/* Desktop Table */}
+        <div className="hidden md:block rounded-xl border border-border">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Coin</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead className="hidden md:table-cell">User</TableHead>
+                <TableHead>User</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="hidden md:table-cell">Date</TableHead>
+                <TableHead>Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -184,11 +185,9 @@ const AdminDashboard = () => {
                   </TableCell>
                   <TableCell className="text-foreground">{order.type}</TableCell>
                   <TableCell className="text-foreground">{order.amount}</TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell>
                     <div className="flex items-center gap-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-xs font-medium text-foreground">
-                        {order.userInitial}
-                      </span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-xs font-medium text-foreground">{order.userInitial}</span>
                       <span className="text-foreground">{order.userName}</span>
                     </div>
                   </TableCell>
@@ -197,11 +196,34 @@ const AdminDashboard = () => {
                       {order.status === "Completed" ? "✓" : order.status === "Pending" ? "⏳" : "✗"} {order.status}
                     </span>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-foreground">{order.date}</TableCell>
+                  <TableCell className="text-foreground">{order.date}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden space-y-2">
+          {adminOrders.slice(0, 5).map((order) => (
+            <div key={order.id} className="rounded-xl border border-border bg-card p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CoinIcon coinId={order.coin} size={28} />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{order.amount}</p>
+                    <p className="text-xs text-muted-foreground">{order.userName}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className={`text-xs font-medium ${order.status === "Completed" ? "text-success" : order.status === "Pending" ? "text-yellow-500" : "text-destructive"}`}>
+                    {order.status}
+                  </span>
+                  <p className="text-[10px] text-muted-foreground">{order.type}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
