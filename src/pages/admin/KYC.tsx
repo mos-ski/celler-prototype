@@ -80,8 +80,8 @@ const AdminKYC = () => {
           ) : (
             <div className="space-y-4">
               {pendingList.map(item => (
-                <div key={item.id} className="rounded-xl border border-border bg-card p-5">
-                  <div className="flex items-start justify-between">
+                <div key={item.id} className="rounded-xl border border-border bg-card p-4 sm:p-5">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-sm font-bold text-foreground">
@@ -101,11 +101,11 @@ const AdminKYC = () => {
                         ))}
                       </div>
                     </div>
-                    <div className="flex gap-2 shrink-0 ml-4">
-                      <Button size="sm" variant="outline" onClick={() => handleReject(item.id, item.user)} className="text-destructive border-destructive/30 hover:bg-destructive/10">
+                    <div className="flex gap-2 shrink-0">
+                      <Button size="sm" variant="outline" onClick={() => handleReject(item.id, item.user)} className="text-destructive border-destructive/30 hover:bg-destructive/10 flex-1 sm:flex-none">
                         <XCircle className="h-4 w-4 mr-1" /> Reject
                       </Button>
-                      <Button size="sm" onClick={() => handleApprove(item.id, item.user)}>
+                      <Button size="sm" onClick={() => handleApprove(item.id, item.user)} className="flex-1 sm:flex-none">
                         <CheckCircle className="h-4 w-4 mr-1" /> Approve
                       </Button>
                     </div>

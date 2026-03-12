@@ -43,7 +43,7 @@ const AdminPushNotifications = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
         {/* Compose */}
         <div className="rounded-xl border border-border bg-card p-6 space-y-5">
           <div className="flex items-center gap-2">

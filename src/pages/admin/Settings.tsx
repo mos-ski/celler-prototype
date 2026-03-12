@@ -48,12 +48,12 @@ const AdminSettings = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 border-b border-border">
+      <div className="flex items-center gap-4 overflow-x-auto border-b border-border no-scrollbar">
         {settingsTabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`pb-2 text-sm font-medium ${activeTab === tab ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}
+            className={`pb-2 text-sm font-medium whitespace-nowrap ${activeTab === tab ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}
           >
             {tab}
           </button>

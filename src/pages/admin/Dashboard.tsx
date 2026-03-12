@@ -103,7 +103,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 lg:col-span-2">
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 lg:col-span-2">
           {statCards.map((stat) => (
             <div key={stat.label} className="rounded-xl border border-border bg-card p-4">
               <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
