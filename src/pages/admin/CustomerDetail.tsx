@@ -8,7 +8,6 @@ import CoinIcon from "@/components/CoinIcon";
 import { toast } from "sonner";
 import { useState } from "react";
 
-// Mock wallet for each customer (deterministic from id)
 function mockWalletForCustomer(c: Customer) {
   const seed = parseInt(c.id.replace("c", ""), 10);
   return COINS.filter(coin => coin.id !== "NGN").map(coin => ({
@@ -51,7 +50,6 @@ const CustomerDetail = () => {
 
   return (
     <div className="space-y-6">
-      {/* Back */}
       <button onClick={() => navigate("/admin/customers")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Back to Customers
       </button>
@@ -103,11 +101,11 @@ const CustomerDetail = () => {
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Volume (NGN)</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{formatNgn(customer.totalVolumeNgn)}</p>
+          <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">{formatNgn(customer.totalVolumeNgn)}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Portfolio (USD)</p>
-          <p className="text-2xl font-bold text-foreground mt-1">${totalUsd.toLocaleString("en-US", { maximumFractionDigits: 2 })}</p>
+          <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">${totalUsd.toLocaleString("en-US", { maximumFractionDigits: 2 })}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="h-3 w-3" /> Joined</p>
@@ -116,11 +114,11 @@ const CustomerDetail = () => {
       </div>
 
       {/* KYC Details */}
-      <div className="rounded-xl border border-border bg-card p-6">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
           <Shield className="h-4 w-4" /> KYC Verification
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {["Tier 1", "Tier 2", "Tier 3"].map((tier) => {
             const isActive = customer.kycLevel === tier || 
               (tier === "Tier 1" && (customer.kycLevel === "Tier 2" || customer.kycLevel === "Tier 3")) ||
@@ -147,9 +145,9 @@ const CustomerDetail = () => {
       </div>
 
       {/* Wallet Balances */}
-      <div className="rounded-xl border border-border bg-card p-6">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="text-base font-semibold text-foreground mb-4">Wallet Balances</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {wallet.map(w => {
             const coin = COINS.find(c => c.id === w.coinId)!;
             return (
@@ -169,7 +167,9 @@ const CustomerDetail = () => {
       {/* Trade History */}
       <div>
         <h2 className="text-base font-semibold text-foreground mb-4">Trade History</h2>
-        <div className="rounded-xl border border-border overflow-x-auto">
+
+        {/* Desktop Table */}
+        <div className="hidden md:block rounded-xl border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -178,15 +178,13 @@ const CustomerDetail = () => {
                 <TableHead>Amount</TableHead>
                 <TableHead>NGN Value</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="hidden md:table-cell">Date</TableHead>
+                <TableHead>Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {customerOrders.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    No trades found for this customer
-                  </TableCell>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No trades found for this customer</TableCell>
                 </TableRow>
               ) : (
                 customerOrders.map(order => (
@@ -207,16 +205,43 @@ const CustomerDetail = () => {
                     <TableCell className="text-foreground">{order.amount}</TableCell>
                     <TableCell className="text-foreground">{formatNgn(order.amountNgn)}</TableCell>
                     <TableCell>
-                      <span className={`text-sm ${order.status === "Completed" ? "text-success" : order.status === "Pending" ? "text-yellow-500" : "text-destructive"}`}>
-                        {order.status}
-                      </span>
+                      <span className={`text-sm ${order.status === "Completed" ? "text-success" : order.status === "Pending" ? "text-yellow-500" : "text-destructive"}`}>{order.status}</span>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground">{order.date}</TableCell>
+                    <TableCell className="text-muted-foreground">{order.date}</TableCell>
                   </TableRow>
                 ))
               )}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden space-y-2">
+          {customerOrders.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground text-sm">No trades found for this customer</div>
+          ) : (
+            customerOrders.map(order => (
+              <div key={order.id} className="rounded-xl border border-border bg-card p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CoinIcon coinId={order.coin} size={24} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{order.amount}</p>
+                      <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${
+                        order.type === "Buy" ? "bg-success/15 text-success" :
+                        order.type === "Sell" ? "bg-primary/15 text-primary" :
+                        "bg-muted text-muted-foreground"
+                      }`}>{order.type}</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-foreground">{formatNgn(order.amountNgn)}</p>
+                    <span className={`text-xs ${order.status === "Completed" ? "text-success" : order.status === "Pending" ? "text-yellow-500" : "text-destructive"}`}>{order.status}</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

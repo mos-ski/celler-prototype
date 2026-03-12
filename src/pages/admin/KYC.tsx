@@ -22,7 +22,6 @@ const kycLogs = [
   { id: "kl11", user: "Ibrahim Musa", tier: "Tier 1", action: "Rejected", method: "BVN mismatch", date: "5 Mar 2025, 2:15 PM", status: "rejected" as const },
 ];
 
-// Tier 3 pending approvals
 const tier3Pending = [
   { id: "t3p1", user: "Kemi Adeyemi", userId: "c7", submitted: "5 Mar 2026", documents: ["Employment Letter", "Tax Certificate", "Risk Questionnaire"], currentTier: "Tier 2" as const },
   { id: "t3p2", user: "Tunde Ajayi", userId: "c6", submitted: "7 Mar 2026", documents: ["Employment Letter", "Bank Statement", "Risk Questionnaire"], currentTier: "Tier 1" as const },
@@ -53,7 +52,7 @@ const AdminKYC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 border-b border-border">
+      <div className="flex items-center gap-4 overflow-x-auto border-b border-border no-scrollbar">
         {tabs.map(tab => (
           <button
             key={tab}
@@ -118,41 +117,64 @@ const AdminKYC = () => {
       )}
 
       {activeTab === "Verification Log" && (
-        <div className="rounded-xl border border-border overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Tier</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead>Action</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="hidden md:table-cell">Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {kycLogs.map(log => (
-                <TableRow key={log.id}>
-                  <TableCell className="font-medium text-foreground">{log.user}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-xs">{log.tier}</Badge>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{log.method}</TableCell>
-                  <TableCell className="text-sm text-foreground">{log.action}</TableCell>
-                  <TableCell>
-                    <span className={`flex items-center gap-1 text-sm ${
-                      log.status === "approved" ? "text-success" : log.status === "pending" ? "text-yellow-500" : "text-destructive"
-                    }`}>
-                      {log.status === "approved" ? <CheckCircle className="h-3.5 w-3.5" /> : log.status === "pending" ? <Clock className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
-                      {log.status.charAt(0).toUpperCase() + log.status.slice(1)}
-                    </span>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground text-sm">{log.date}</TableCell>
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block rounded-xl border border-border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Tier</TableHead>
+                  <TableHead>Method</TableHead>
+                  <TableHead>Action</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {kycLogs.map(log => (
+                  <TableRow key={log.id}>
+                    <TableCell className="font-medium text-foreground">{log.user}</TableCell>
+                    <TableCell><Badge variant="outline" className="text-xs">{log.tier}</Badge></TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{log.method}</TableCell>
+                    <TableCell className="text-sm text-foreground">{log.action}</TableCell>
+                    <TableCell>
+                      <span className={`flex items-center gap-1 text-sm ${
+                        log.status === "approved" ? "text-success" : log.status === "pending" ? "text-yellow-500" : "text-destructive"
+                      }`}>
+                        {log.status === "approved" ? <CheckCircle className="h-3.5 w-3.5" /> : log.status === "pending" ? <Clock className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
+                        {log.status.charAt(0).toUpperCase() + log.status.slice(1)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm">{log.date}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-2">
+            {kycLogs.map(log => (
+              <div key={log.id} className="rounded-xl border border-border bg-card p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground text-sm">{log.user}</span>
+                    <Badge variant="outline" className="text-[10px]">{log.tier}</Badge>
+                  </div>
+                  <span className={`flex items-center gap-1 text-xs ${
+                    log.status === "approved" ? "text-success" : log.status === "pending" ? "text-yellow-500" : "text-destructive"
+                  }`}>
+                    {log.status === "approved" ? <CheckCircle className="h-3 w-3" /> : log.status === "pending" ? <Clock className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                    {log.status.charAt(0).toUpperCase() + log.status.slice(1)}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">{log.method} · {log.action}</p>
+                <p className="text-[11px] text-muted-foreground mt-1">{log.date}</p>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {activeTab === "Overview" && (
@@ -175,12 +197,12 @@ const AdminKYC = () => {
             <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2"><Shield className="h-4 w-4" /> Tier Limits</h3>
             <div className="space-y-3">
               {Object.entries(kycTierConfig.getConfig()).map(([tier, config]) => (
-                <div key={tier} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                <div key={tier} className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-border last:border-0 gap-1">
                   <div>
                     <p className="font-medium text-foreground">{tier.replace("tier", "Tier ")}</p>
                     <p className="text-xs text-muted-foreground">{config.method}</p>
                   </div>
-                  <div className="text-right text-sm">
+                  <div className="sm:text-right text-sm">
                     <p className="text-foreground">Trade: {formatNgn(config.tradeLimitNgn)}</p>
                     <p className="text-muted-foreground">Withdraw: {formatNgn(config.withdrawLimitNgn)}</p>
                   </div>

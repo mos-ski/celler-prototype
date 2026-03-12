@@ -30,7 +30,6 @@ const AdminReferrals = () => {
   const handleApprove = (id: string) => {
     const updated = withdrawals.map((w) => {
       if (w.id === id) {
-        // Credit the user's NGN wallet
         store.updateWalletCoin("NGN", w.amountNgn);
         return { ...w, status: "approved" as const, dateResolved: new Date().toISOString() };
       }
@@ -118,102 +117,127 @@ const AdminReferrals = () => {
 
       {/* Withdrawal Requests */}
       {activeTab === "withdrawals" && (
-        <div className="rounded-xl border border-border overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Amount</TableHead>
-                <TableHead>Date Requested</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="hidden md:table-cell">Resolved</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {withdrawals.length === 0 && (
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block rounded-xl border border-border">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">No withdrawal requests</TableCell>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Date Requested</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Resolved</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              )}
-              {withdrawals.map((w) => (
-                <TableRow key={w.id}>
-                  <TableCell className="font-semibold text-foreground">{formatNgn(w.amountNgn)}</TableCell>
-                  <TableCell className="text-foreground">
-                    {new Date(w.dateRequested).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${withdrawalStatusColor(w.status)}`}>
-                      {w.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-foreground">
-                    {w.dateResolved
-                      ? new Date(w.dateResolved).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })
-                      : "—"}
-                  </TableCell>
-                  <TableCell>
-                    {w.status === "pending" ? (
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleApprove(w.id)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-success/15 text-success hover:bg-success/25 transition-colors"
-                        >
-                          <Check className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleReject(w.id)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/15 text-destructive hover:bg-destructive/25 transition-colors"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {withdrawals.length === 0 && (
+                  <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No withdrawal requests</TableCell></TableRow>
+                )}
+                {withdrawals.map((w) => (
+                  <TableRow key={w.id}>
+                    <TableCell className="font-semibold text-foreground">{formatNgn(w.amountNgn)}</TableCell>
+                    <TableCell className="text-foreground">{new Date(w.dateRequested).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</TableCell>
+                    <TableCell>
+                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${withdrawalStatusColor(w.status)}`}>{w.status}</span>
+                    </TableCell>
+                    <TableCell className="text-foreground">
+                      {w.dateResolved ? new Date(w.dateResolved).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                    </TableCell>
+                    <TableCell>
+                      {w.status === "pending" ? (
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => handleApprove(w.id)} className="flex h-7 w-7 items-center justify-center rounded-lg bg-success/15 text-success hover:bg-success/25 transition-colors"><Check className="h-4 w-4" /></button>
+                          <button onClick={() => handleReject(w.id)} className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/15 text-destructive hover:bg-destructive/25 transition-colors"><X className="h-4 w-4" /></button>
+                        </div>
+                      ) : <span className="text-xs text-muted-foreground">—</span>}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-2">
+            {withdrawals.length === 0 && (
+              <div className="text-center text-muted-foreground py-8 text-sm">No withdrawal requests</div>
+            )}
+            {withdrawals.map((w) => (
+              <div key={w.id} className="rounded-xl border border-border bg-card p-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-foreground">{formatNgn(w.amountNgn)}</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${withdrawalStatusColor(w.status)}`}>{w.status}</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Requested: {new Date(w.dateRequested).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
+                </p>
+                {w.status === "pending" && (
+                  <div className="flex gap-2 mt-2">
+                    <button onClick={() => handleApprove(w.id)} className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-success/15 text-success py-1.5 text-xs font-medium hover:bg-success/25"><Check className="h-3 w-3" /> Approve</button>
+                    <button onClick={() => handleReject(w.id)} className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-destructive/15 text-destructive py-1.5 text-xs font-medium hover:bg-destructive/25"><X className="h-3 w-3" /> Reject</button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* All Referrals */}
       {activeTab === "referrals" && (
-        <div className="rounded-xl border border-border overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Date Joined</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Reward</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {referrals.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="text-foreground font-medium">{r.referredName}</TableCell>
-                  <TableCell className="text-foreground">{r.referredEmail}</TableCell>
-                  <TableCell className="text-foreground">
-                    {new Date(r.dateJoined).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(r.status)}`}>
-                      {statusLabel(r.status)}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className={`text-sm font-semibold ${r.rewardUnlocked ? "text-success" : "text-muted-foreground"}`}>
-                      {r.rewardUnlocked ? "+" : ""}{formatNgn(r.rewardAmountNgn)}
-                    </span>
-                  </TableCell>
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block rounded-xl border border-border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Date Joined</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Reward</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {referrals.map((r) => (
+                  <TableRow key={r.id}>
+                    <TableCell className="text-foreground font-medium">{r.referredName}</TableCell>
+                    <TableCell className="text-foreground">{r.referredEmail}</TableCell>
+                    <TableCell className="text-foreground">{new Date(r.dateJoined).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</TableCell>
+                    <TableCell>
+                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(r.status)}`}>{statusLabel(r.status)}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className={`text-sm font-semibold ${r.rewardUnlocked ? "text-success" : "text-muted-foreground"}`}>
+                        {r.rewardUnlocked ? "+" : ""}{formatNgn(r.rewardAmountNgn)}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-2">
+            {referrals.map((r) => (
+              <div key={r.id} className="rounded-xl border border-border bg-card p-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-foreground text-sm">{r.referredName}</span>
+                  <span className={`text-sm font-semibold ${r.rewardUnlocked ? "text-success" : "text-muted-foreground"}`}>
+                    {r.rewardUnlocked ? "+" : ""}{formatNgn(r.rewardAmountNgn)}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">{r.referredEmail}</p>
+                <div className="flex items-center justify-between mt-1.5">
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusColor(r.status)}`}>{statusLabel(r.status)}</span>
+                  <span className="text-[11px] text-muted-foreground">{new Date(r.dateJoined).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Config */}
