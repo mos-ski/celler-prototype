@@ -47,9 +47,9 @@ const AdminDashboard = () => {
     <div className="space-y-6">
       {/* Pending Actions Alert */}
       {(pendingGiftcards > 0 || pendingReferralWithdrawals > 0) && (
-        <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex items-center justify-between">
+        <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
+            <div className="h-10 w-10 shrink-0 rounded-full bg-yellow-500/20 flex items-center justify-center">
               <Gift className="h-5 w-5 text-yellow-500" />
             </div>
             <div>
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 lg:col-span-2">
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 lg:col-span-2">
           {statCards.map((stat) => (
             <div key={stat.label} className="rounded-xl border border-border bg-card p-4">
               <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>

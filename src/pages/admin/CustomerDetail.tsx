@@ -64,7 +64,7 @@ const CustomerDetail = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-foreground">{customer.name}</h1>
-            <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mt-1 text-sm text-muted-foreground">
               <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {customer.email}</span>
               <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {customer.phone}</span>
             </div>
