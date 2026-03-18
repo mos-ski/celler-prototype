@@ -1,83 +1,114 @@
 
 
-# Desktop Responsive Layout — Matching Figma Designs
+# Referral System PRD
 
-## What the Figma shows
+## Overview
+A referral rewards program where users earn NGN 5,000 for each referred user who signs up, completes KYC verification, and makes their first trade (buy, sell, or swap).
 
-The uploaded screenshots reveal a consistent desktop layout pattern across all user-facing pages:
+## Reward Structure
+- **Reward per referral**: NGN 5,000 (admin-adjustable)
+- **Trigger conditions**: Referred user must (1) sign up using referral code, (2) complete KYC verification, and (3) execute at least one trade
+- **Payout currency**: NGN (credited to Naira wallet upon approval)
 
-1. **Top bar**: Celler logo (top-left), settings gear icon (top-right), and on some pages a back button (top-center) and headphone/support icon
-2. **Left sidebar**: Vertical nav with items — Home, History, Wallet, Profile (and contextually Swap) — with active item highlighted in primary color with a left accent. A "Logout" button at the bottom in red.
-3. **Content area**: Centered card container (~650-700px max-width) with generous padding, sitting to the right of the sidebar
-4. **Auth pages** (SignUp/SignIn): Full-width centered card layout with Celler logo top-left, gear + headphone icons top-right, a blue accent line below the top bar, and "Celler 2026" footer bottom-left
-5. **KYC modal**: Overlay dialog on the dashboard prompting upgrade
+## Withdrawal Rules
+- **Weekly withdrawal limit**: NGN 10,000 (admin-adjustable)
+- **Process**: User submits a redemption/withdrawal request from their referral earnings balance
+- **Admin approval required**: All withdrawal requests go to a pending state and must be manually approved by an admin before funds are released to the user's NGN wallet
+- **Fraud control**: Admin can reject suspicious requests
 
-## Current state
+## Referral Lifecycle
 
-- Mobile-first with bottom nav bar and `max-w-[430px]` content
-- No sidebar, no top bar with logo on desktop
-- Auth pages are full-screen mobile layouts
+```text
++------------------+     +------------------+     +------------------+
+|  User shares     | --> |  Friend signs up | --> |  Friend verifies |
+|  referral code   |     |  with code       |     |  KYC             |
++------------------+     +------------------+     +------------------+
+                                                          |
+                                                          v
++------------------+     +------------------+     +------------------+
+|  NGN 5,000 added | <-- |  Reward unlocked | <-- |  Friend makes    |
+|  to referral     |     |                  |     |  first trade     |
+|  earnings balance|     +------------------+     +------------------+
++------------------+
+         |
+         v
++------------------+     +------------------+     +------------------+
+|  User requests   | --> |  Admin reviews   | --> |  Approved: funds |
+|  withdrawal      |     |  & approves      |     |  sent to NGN     |
+|  (max 10k/week)  |     |                  |     |  wallet          |
++------------------+     +------------------+     +------------------+
+```
 
-## Plan
+## Referral Page UI
 
-### 1. Refactor `AppLayout.tsx` for desktop sidebar
+### Top Section
+- Banner: "Earn NGN 5,000 per Referral"
+- Subtitle explaining the 3-step requirement (signup, verify, trade)
 
-- On `md+` screens: Show a left sidebar with Celler logo, nav items (Home, History, Swap, Wallet, Profile), and Logout at bottom
-- Hide bottom nav on `md+`; keep it for mobile
-- Content area: Remove `max-w-[430px]` constraint on desktop, use `max-w-[720px]` centered in the remaining space
-- Add top bar on desktop with Celler logo (already in sidebar), settings gear icon top-right
-- Nav items change from mobile set (Home, History, Swap, Giftcard, Profile) to desktop set matching Figma: Home, History, Wallet, Profile (Swap shows contextually)
+### Stats Cards
+- **Total Earned** (lifetime referral earnings)
+- **Available Balance** (withdrawable amount)
+- **Withdrawn This Week** / **Weekly Limit** (e.g., NGN 2,000 / NGN 10,000)
 
-### 2. Add desktop top header bar
+### Referral Code & Link
+- Display unique code with copy button
+- Full referral link with copy button
+- Share button (Web Share API)
 
-- Celler logo + "celler" text top-left (only on mobile, since desktop has it in sidebar — actually Figma shows logo in both sidebar area and top bar)
-- Looking more carefully: Logo is top-left outside the sidebar, with a settings gear top-right. The sidebar sits below.
-- Implementation: A persistent top bar with logo left, gear icon right. On pages with back buttons, show back button top-center.
+### Referral List
+Each referral entry shows:
+- Friend's name (or masked email)
+- Status badge: `Signed Up` | `Verified` | `Traded` (reward unlocked) | `Expired`
+- Date joined
+- Reward amount (greyed out until unlocked, green when earned)
 
-### 3. Update auth pages (SignIn, SignUp)
+### Withdrawal Section
+- "Withdraw Earnings" button
+- Amount input (capped at available balance and weekly remaining limit)
+- Shows weekly limit usage
+- Submit creates a pending request
 
-- Add top bar with Celler logo, gear icon, headphone icon
-- Blue accent line below the top bar
-- Center the form in a card container (~max-w-md)
-- "Celler 2026" footer bottom-left
+### Withdrawal History
+- List of past redemption requests
+- Each shows: amount, date, status (`Pending` | `Approved` | `Rejected`)
 
-### 4. Sidebar nav items & styling
+## Admin-Adjustable Variables (stored in localStorage for prototype)
+- `referralRewardNgn`: NGN 5,000 (default)
+- `weeklyWithdrawLimitNgn`: NGN 10,000 (default)
+- These are read from a config store so they can be changed from an admin settings page later
 
-- Items: Home (`/dashboard`), History (`/history`), Swap (`/swap`) — only on Swap page, Wallet (new route or link to `/manage-assets` or a wallet page), Profile (`/profile`)
-- Active state: primary color text + left border/background accent
-- Logout button at bottom in red with icon
+## Data Model (localStorage)
 
-### 5. Files to modify
+**Referral Config**:
+```text
+{
+  rewardAmountNgn: 5000,
+  weeklyWithdrawLimitNgn: 10000
+}
+```
 
-| File | Change |
-|------|--------|
-| `src/components/AppLayout.tsx` | Major refactor — add desktop sidebar, top bar, responsive nav |
-| `src/pages/SignIn.tsx` | Wrap in desktop auth layout with logo bar |
-| `src/pages/SignUp.tsx` | Same auth layout wrapper |
-| `src/pages/Dashboard.tsx` | Remove redundant header (greeting stays but adjust for desktop) |
-| `src/pages/Swap.tsx` | Adjust for desktop content width |
-| `src/pages/Profile.tsx` | Adjust padding for desktop |
-| `src/pages/ManageAssets.tsx` | This becomes the "Wallet" page on desktop nav |
-| `src/pages/CoinDetail.tsx` | Adjust back button positioning for desktop |
-| Possibly create `src/components/DesktopSidebar.tsx` | Extracted sidebar component |
-| Possibly create `src/components/AuthLayout.tsx` | Shared auth page wrapper |
+**Referrals Array**:
+```text
+{
+  id, referredName, referredEmail,
+  dateJoined, status: "signed_up" | "verified" | "traded",
+  rewardUnlocked: boolean, rewardAmountNgn
+}
+```
 
-### 6. Key design details from Figma
+**Withdrawal Requests Array**:
+```text
+{
+  id, amountNgn, dateRequested,
+  status: "pending" | "approved" | "rejected",
+  dateResolved?
+}
+```
 
-- Sidebar width: ~280px, dark background matching `--sidebar-background`
-- Nav items: Icon + label, spaced ~50px apart vertically
-- Active nav: Primary blue text, subtle background highlight with left accent
-- Content area: Card-style with `bg-card` background, rounded corners
-- Settings gear: Gray circle button, top-right of viewport
-- Back button: Gray circle, positioned top-center between logo and gear
-- The "Swap" nav item appears in sidebar only when on swap-related pages
-- Wallet page shows coin list without the dashboard balance/actions section
-
-### 7. Implementation approach
-
-- Create a `DesktopSidebar` component with the nav structure
-- In `AppLayout`, use `useIsMobile()` hook to conditionally render sidebar (desktop) vs bottom nav (mobile)
-- Wrap content in a centered container with appropriate max-width on desktop
-- Create an `AuthLayout` component for SignIn/SignUp with the top bar pattern
-- Keep all existing mobile behavior intact
+## Technical Approach
+- Extend `src/lib/crypto.ts` with referral store functions (config, referrals list, withdrawal requests)
+- Rebuild `src/pages/Referral.tsx` with the full UI described above
+- Add mock referral data (mix of statuses) so the page feels alive
+- Withdrawal approval will credit the user's NGN wallet balance via `store.updateWalletCoin("NGN", amount)`
+- No admin page in this phase -- approvals can be simulated with mock data
 
