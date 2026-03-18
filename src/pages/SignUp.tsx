@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Eye, EyeOff, CheckCircle2, Circle, Apple, Phone } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import AuthLayout from "@/components/AuthLayout";
 
 type Step = "email" | "otp" | "password" | "success";
 
-export default function SignUp() {
+function SignUpForm() {
   const { isLoggedIn, signup } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("email");
@@ -23,7 +24,6 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [countdown, setCountdown] = useState(50);
 
-  // OTP countdown
   useEffect(() => {
     if (step !== "otp" || countdown <= 0) return;
     const t = setInterval(() => setCountdown((c) => c - 1), 1000);
@@ -65,43 +65,27 @@ export default function SignUp() {
     else if (step === "password") setStep("otp");
   };
 
-  // ─── Email step ───
   if (step === "email") {
     return (
-      <div className="flex min-h-screen flex-col px-6 pt-14 pb-8 bg-background">
+      <div className="flex flex-col flex-1">
         <h1 className="text-2xl font-bold mb-8">Create Account</h1>
         {error && <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-4 py-2 mb-4">{error}</p>}
-
         <div className="space-y-6">
           <div>
             <label className="text-sm font-medium text-foreground">Email</label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="eg: johndoe@example.com"
-              className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary"
-            />
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="eg: johndoe@example.com"
+              className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary" />
           </div>
           <div>
             <label className="text-sm font-medium text-foreground">Referral Code (Optional)</label>
-            <Input
-              value={referral}
-              onChange={(e) => setReferral(e.target.value)}
-              placeholder="Enter Referral code"
-              className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary"
-            />
+            <Input value={referral} onChange={(e) => setReferral(e.target.value)} placeholder="Enter Referral code"
+              className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary" />
           </div>
         </div>
-
-        <Button onClick={handleEmailContinue} className="w-full h-14 rounded-2xl text-base font-semibold mt-10 bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-          Continue
-        </Button>
-
-        {/* Social options */}
+        <Button onClick={handleEmailContinue} className="w-full h-14 rounded-2xl text-base font-semibold mt-10 bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors">Continue</Button>
         <div className="flex justify-center gap-8 mt-8">
           {[
-            { icon: <span className="text-xl font-bold" style={{fontFamily: "sans-serif"}}>G</span>, label: "Google" },
+            { icon: <span className="text-xl font-bold" style={{ fontFamily: "sans-serif" }}>G</span>, label: "Google" },
             { icon: <Apple size={22} />, label: "Apple" },
             { icon: <Phone size={22} />, label: "Phone Number" },
           ].map((s) => (
@@ -111,81 +95,60 @@ export default function SignUp() {
             </div>
           ))}
         </div>
-
         <p className="text-center text-sm text-muted-foreground mt-auto pt-8">
-          Already a user?{" "}
-          <Link to="/signin" className="text-primary font-medium">Sign in</Link>
+          Already a user? <Link to="/signin" className="text-primary font-medium">Sign in</Link>
         </p>
       </div>
     );
   }
 
-  // ─── OTP step ───
   if (step === "otp") {
     return (
-      <div className="flex min-h-screen flex-col px-6 pt-10 pb-8 bg-background">
+      <div className="flex flex-col flex-1">
         <button onClick={back} className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mb-6">
           <ArrowLeft size={18} />
         </button>
         <h1 className="text-2xl font-bold">Verify Email</h1>
         <p className="text-sm text-muted-foreground mt-2">
-          We've sent you an OTP Code via Email. Please enter 6-digit code sent to{" "}
-          <span className="text-primary">{email}</span>
+          We've sent you an OTP Code via Email. Please enter 6-digit code sent to <span className="text-primary">{email}</span>
         </p>
-
         {error && <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-4 py-2 mt-4">{error}</p>}
-
         <p className="text-sm font-medium mt-8 mb-3">Enter Code</p>
         <InputOTP value={otp} onChange={setOtp} maxLength={6}>
           <InputOTPGroup className="gap-2 w-full justify-between">
-            {[0,1,2,3,4,5].map((i) => (
+            {[0, 1, 2, 3, 4, 5].map((i) => (
               <InputOTPSlot key={i} index={i} className="h-12 w-full border-0 border-b-2 border-muted rounded-none text-lg" />
             ))}
           </InputOTPGroup>
         </InputOTP>
-
         <p className="text-sm text-muted-foreground mt-4">
           Resend code{" "}
           {countdown > 0 ? <span className="text-foreground">in {countdown} secs</span> : <button className="text-primary font-medium" onClick={() => setCountdown(50)}>Resend</button>}
         </p>
-
-        <Button onClick={handleVerify} className="w-full h-14 rounded-2xl text-base font-semibold mt-10 bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-          Verify
-        </Button>
+        <Button onClick={handleVerify} className="w-full h-14 rounded-2xl text-base font-semibold mt-10 bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors">Verify</Button>
       </div>
     );
   }
 
-  // ─── Password step ───
   if (step === "password") {
     return (
-      <div className="flex min-h-screen flex-col px-6 pt-10 pb-8 bg-background">
+      <div className="flex flex-col flex-1">
         <button onClick={back} className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mb-6">
           <ArrowLeft size={18} />
         </button>
         <h1 className="text-2xl font-bold mb-8">Create Password</h1>
         {error && <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-4 py-2 mb-4">{error}</p>}
-
         <div className="space-y-6">
           <div>
             <label className="text-sm font-medium">Username</label>
-            <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="eg: johndoe"
-              className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary"
-            />
+            <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="eg: johndoe"
+              className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary" />
           </div>
           <div>
             <label className="text-sm font-medium">Password</label>
             <div className="relative">
-              <Input
-                type={showPw ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter Password"
-                className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 pr-10 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary"
-              />
+              <Input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter Password"
+                className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 pr-10 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary" />
               <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-muted-foreground">
                 {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -194,21 +157,14 @@ export default function SignUp() {
           <div>
             <label className="text-sm font-medium">Confirm Password</label>
             <div className="relative">
-              <Input
-                type={showConfirmPw ? "text" : "password"}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Enter Password"
-                className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 pr-10 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary"
-              />
+              <Input type={showConfirmPw ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Enter Password"
+                className="mt-2 h-12 bg-transparent border-0 border-b border-border rounded-none px-0 pr-10 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-primary" />
               <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-muted-foreground">
                 {showConfirmPw ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
         </div>
-
-        {/* Password requirements */}
         <div className="mt-6 space-y-2">
           <p className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">Password must contain at least</p>
           {[
@@ -222,17 +178,14 @@ export default function SignUp() {
             </div>
           ))}
         </div>
-
-        <Button onClick={handleCreate} className="w-full h-14 rounded-2xl text-base font-semibold mt-auto bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-          Create Account
-        </Button>
+        <Button onClick={handleCreate} className="w-full h-14 rounded-2xl text-base font-semibold mt-auto bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors">Create Account</Button>
       </div>
     );
   }
 
-  // ─── Success step ───
+  // Success
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-6 bg-background">
+    <div className="flex flex-col items-center justify-center flex-1">
       <div className="h-20 w-20 rounded-full bg-primary flex items-center justify-center mb-6">
         <CheckCircle2 size={40} className="text-primary-foreground" />
       </div>
@@ -244,5 +197,22 @@ export default function SignUp() {
         Continue
       </Button>
     </div>
+  );
+}
+
+export default function SignUp() {
+  return (
+    <>
+      {/* Mobile */}
+      <div className="md:hidden flex min-h-screen flex-col px-6 pt-14 pb-8 bg-background">
+        <SignUpForm />
+      </div>
+      {/* Desktop */}
+      <div className="hidden md:block">
+        <AuthLayout>
+          <SignUpForm />
+        </AuthLayout>
+      </div>
+    </>
   );
 }
