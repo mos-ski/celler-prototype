@@ -4,6 +4,7 @@ import { ArrowLeft, Check, Copy, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import TransactionPinDialog from "@/components/TransactionPinDialog";
 import {
   GIFT_CARD_BRANDS,
   calcGiftCardBuyPrice,
@@ -25,7 +26,8 @@ export default function GiftcardBuy() {
   const [customAmount, setCustomAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [deliveredCode, setDeliveredCode] = useState("");
-  const [pin, setPin] = useState("");
+  const [giftCardPin, setGiftCardPin] = useState("");
+  const [showPin, setShowPin] = useState(false);
 
   if (!brand) {
     return (
@@ -48,6 +50,11 @@ export default function GiftcardBuy() {
 
   const handleBuy = () => {
     if (!canBuy) return;
+    setShowPin(true);
+  };
+
+  const completePurchase = () => {
+    if (!canBuy) return;
     setSubmitting(true);
     setTimeout(() => {
       const code = generateGiftCardCode(brand);
@@ -66,7 +73,7 @@ export default function GiftcardBuy() {
         description: `Bought ${brand.name} ${brand.currency} ${effectiveAmount} gift card`,
       });
       setDeliveredCode(code);
-      setPin(generatedPin);
+      setGiftCardPin(generatedPin);
       setSubmitting(false);
       setStep("success");
       toast.success("Gift card delivered", {
@@ -237,7 +244,7 @@ export default function GiftcardBuy() {
 
             <div className="w-full rounded-2xl border border-border/40 bg-card p-4 space-y-3">
               <CodeRow label="Card Code" value={deliveredCode} onCopy={() => handleCopy(deliveredCode, "Card code")} />
-              <CodeRow label="PIN" value={pin} onCopy={() => handleCopy(pin, "PIN")} />
+              <CodeRow label="Gift Card PIN" value={giftCardPin} onCopy={() => handleCopy(giftCardPin, "Gift card PIN")} />
             </div>
 
             <div className="flex gap-3 w-full">
@@ -257,6 +264,14 @@ export default function GiftcardBuy() {
             </div>
           </div>
         )}
+
+        <TransactionPinDialog
+          open={showPin}
+          onOpenChange={setShowPin}
+          onVerified={completePurchase}
+          title="Authorize Purchase"
+          description="Enter your transaction PIN to buy this gift card."
+        />
       </div>
     </PageTransition>
   );

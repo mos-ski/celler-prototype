@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import PageTransition from "@/components/PageTransition";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import TransactionPinDialog from "@/components/TransactionPinDialog";
 import {
   BILL_CATEGORIES,
   PROVIDERS,
@@ -25,6 +26,7 @@ export default function BillPay() {
   const [amount, setAmount] = useState("");
   const [planId, setPlanId] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showPin, setShowPin] = useState(false);
 
   const wallet = store.getWallet();
   const ngnBalance = wallet.NGN || 0;
@@ -70,6 +72,11 @@ export default function BillPay() {
     !submitting;
 
   const handlePay = () => {
+    if (!canPay) return;
+    setShowPin(true);
+  };
+
+  const completePayment = () => {
     if (!canPay || !provider) return;
     setSubmitting(true);
     setTimeout(() => {
@@ -236,6 +243,14 @@ export default function BillPay() {
           {submitting ? "Processing..." : `Pay ${payAmount > 0 ? formatNgn(payAmount) : ""}`}
         </Button>
       </div>
+
+      <TransactionPinDialog
+        open={showPin}
+        onOpenChange={setShowPin}
+        onVerified={completePayment}
+        title="Authorize Payment"
+        description="Enter your transaction PIN to pay this bill."
+      />
     </PageTransition>
   );
 }
