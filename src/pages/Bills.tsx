@@ -26,15 +26,17 @@ export default function Bills() {
 
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Categories</p>
-          {BILL_CATEGORIES.map((cat) => (
+          {BILL_CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            return (
             <button
               key={cat.id}
               onClick={() => navigate(`/bills/${cat.id}`)}
               className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-border/40 hover:bg-secondary/50 transition-colors text-left"
             >
               <div className="flex items-center gap-3">
-                <div className="h-11 w-11 rounded-xl bg-secondary flex items-center justify-center text-2xl">
-                  {cat.emoji}
+                <div className={`h-11 w-11 rounded-xl flex items-center justify-center ${cat.accent}`}>
+                  <Icon size={20} />
                 </div>
                 <div>
                   <p className="font-semibold text-sm">{cat.label}</p>
@@ -43,7 +45,8 @@ export default function Bills() {
               </div>
               <ChevronRight size={18} className="text-muted-foreground" />
             </button>
-          ))}
+            );
+          })}
         </div>
       </div>
     </PageTransition>
