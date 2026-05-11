@@ -9,6 +9,7 @@ export default function Giftcards() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [mode, setMode] = useState<"buy" | "sell">("buy");
 
   const filtered = GIFT_CARD_BRANDS.filter((b) => {
     const matchSearch =
@@ -34,7 +35,30 @@ export default function Giftcards() {
           </button>
         </div>
 
-        <p className="text-sm text-muted-foreground">Sell your gift cards instantly for Naira.</p>
+        <div className="grid grid-cols-2 gap-2 rounded-2xl bg-secondary p-1">
+          {[
+            { id: "buy", label: "Buy" },
+            { id: "sell", label: "Sell" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setMode(item.id as "buy" | "sell")}
+              className={`h-10 rounded-xl text-sm font-semibold transition-colors ${
+                mode === item.id
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <p className="text-sm text-muted-foreground">
+          {mode === "buy"
+            ? "Buy digital gift cards instantly with your Naira wallet."
+            : "Sell your gift cards instantly for Naira."}
+        </p>
 
         {/* Search */}
         <div className="relative">
@@ -69,7 +93,7 @@ export default function Giftcards() {
           {filtered.map((brand) => (
             <button
               key={brand.id}
-              onClick={() => navigate(`/giftcard/sell/${brand.id}`)}
+              onClick={() => navigate(`/giftcard/${mode}/${brand.id}`)}
               className="flex flex-col items-center gap-2 rounded-2xl bg-secondary p-4 hover:bg-secondary/70 transition-colors"
             >
               <div className="h-12 w-12 rounded-xl bg-background flex items-center justify-center p-2">

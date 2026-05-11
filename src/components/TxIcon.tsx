@@ -19,6 +19,7 @@ export default function TxIcon({ tx }: { tx: Transaction }) {
     case "send": case "withdraw": iconType = "arrow-up-right"; break;
     case "receive": case "deposit": iconType = "arrow-down-left"; break;
     case "swap": iconType = "arrow-up-right"; break;
+    case "bill": case "giftcard": iconType = "arrow-up-right"; break;
   }
   
   const Icon = iconMap[iconType];

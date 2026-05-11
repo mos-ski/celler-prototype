@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Home, Clock, ArrowLeftRight, Wallet, User, LogOut } from "lucide-react";
+import { Home, Clock, ArrowLeftRight, Wallet, Gift, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: "/history", label: "History", icon: Clock },
   { to: "/swap", label: "Swap", icon: ArrowLeftRight },
   { to: "/manage-assets", label: "Wallet", icon: Wallet },
+  { to: "/giftcards", label: "Giftcard", icon: Gift },
   { to: "/profile", label: "Profile", icon: User },
 ];
 
@@ -35,7 +36,11 @@ export default function DesktopSidebar() {
       <nav className="flex-1 flex flex-col gap-1 px-3">
         {NAV_ITEMS.map((item) => {
           const active = location.pathname === item.to || 
-            (item.to === "/manage-assets" && location.pathname.startsWith("/coin/"));
+            (item.to === "/manage-assets" && location.pathname.startsWith("/coin/")) ||
+            (item.to === "/giftcards" && (
+              location.pathname.startsWith("/giftcard/") ||
+              location.pathname === "/giftcard-orders"
+            ));
           return (
             <Link
               key={item.to}

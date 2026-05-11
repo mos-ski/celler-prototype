@@ -9,7 +9,7 @@ export interface Coin {
   marketPriceUsd: number;
 }
 
-export type TxType = "buy" | "sell" | "swap" | "deposit" | "withdraw" | "receive" | "send" | "bill";
+export type TxType = "buy" | "sell" | "swap" | "deposit" | "withdraw" | "receive" | "send" | "bill" | "giftcard";
 
 export interface Transaction {
   id: string;
@@ -202,6 +202,7 @@ export const getTxLabel = (tx: Transaction): string => {
     case "receive": return `Receive ${tx.coin} to Wallet`;
     case "send": return `Send ${tx.coin} to Wallet`;
     case "bill": return tx.description || "Bill Payment";
+    case "giftcard": return tx.description || "Gift Card Purchase";
     default: return tx.type;
   }
 };
@@ -216,6 +217,7 @@ export const getTxIcon = (tx: Transaction): "arrow-up-right" | "arrow-down-left"
     case "deposit": return "arrow-down";
     case "swap": return "arrow-up-right";
     case "bill": return "arrow-up-right";
+    case "giftcard": return "arrow-up-right";
     default: return "arrow-up-right";
   }
 };

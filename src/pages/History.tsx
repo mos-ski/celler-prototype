@@ -13,6 +13,8 @@ const TYPE_FILTERS: { label: string; value: TxType | "all" }[] = [
   { label: "Swap", value: "swap" },
   { label: "Send", value: "send" },
   { label: "Receive", value: "receive" },
+  { label: "Bills", value: "bill" },
+  { label: "Giftcard", value: "giftcard" },
 ];
 
 const STATUS_FILTERS = [

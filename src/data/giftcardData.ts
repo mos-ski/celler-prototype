@@ -137,6 +137,25 @@ export function calcNgnPayout(brand: GiftCardBrand, amount: number, ngnRate: num
   return amount * (rate / 100) * ngnRate;
 }
 
+export function getBuyFeePercent(brand: GiftCardBrand, amount: number): number {
+  const highValueDiscount = amount >= 200 ? 1 : 0;
+  const categoryFee = brand.category === "Prepaid" ? 4 : brand.category === "Gaming" ? 2.5 : 3;
+  return Math.max(1.5, categoryFee - highValueDiscount);
+}
+
+export function calcGiftCardBuyPrice(brand: GiftCardBrand, amount: number, ngnRate: number): number {
+  const feePercent = getBuyFeePercent(brand, amount);
+  return amount * ngnRate * (1 + feePercent / 100);
+}
+
+export function generateGiftCardCode(brand: GiftCardBrand): string {
+  const prefix = brand.name.replace(/[^A-Z0-9]/gi, "").slice(0, 4).toUpperCase().padEnd(4, "X");
+  const segments = Array.from({ length: 3 }, () =>
+    Math.random().toString(36).slice(2, 6).toUpperCase()
+  );
+  return [prefix, ...segments].join("-");
+}
+
 // localStorage store for gift card orders
 const GC_ORDERS_KEY = "cex_giftcard_orders";
 

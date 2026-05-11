@@ -70,6 +70,25 @@ export default function TransactionDetailPage() {
             </>
           )}
 
+          {tx.type === "giftcard" && (
+            <>
+              <DetailRow label="Gift Card" value={tx.description || "Gift Card Purchase"} />
+              <DetailRow label="Exchange Rate" value="₦1,410/$" />
+              <DetailRow label="Amount Paid (NGN)" value={formatNgn(tx.ngnValue)} />
+              <DetailRow label="Amount Paid (USD)" value={formatUsd(tx.usdValue)} />
+              <DetailRow label="Delivery" value="Instant" highlight />
+            </>
+          )}
+
+          {tx.type === "bill" && (
+            <>
+              <DetailRow label="Bill" value={tx.description || "Bill Payment"} />
+              <DetailRow label="Source" value="Naira Wallet" />
+              <DetailRow label="Amount Paid (NGN)" value={formatNgn(tx.ngnValue)} />
+              <DetailRow label="Status" value={tx.status === "completed" ? "Completed" : tx.status} highlight={tx.status === "completed"} />
+            </>
+          )}
+
           {tx.type === "sell" && (
             <>
               <DetailRow label="Sold" value={`${formatCoin(tx.quantity)} ${coinId}`} />
