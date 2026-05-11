@@ -9,7 +9,7 @@ export interface Coin {
   marketPriceUsd: number;
 }
 
-export type TxType = "buy" | "sell" | "swap" | "deposit" | "withdraw" | "receive" | "send";
+export type TxType = "buy" | "sell" | "swap" | "deposit" | "withdraw" | "receive" | "send" | "bill";
 
 export interface Transaction {
   id: string;
@@ -27,6 +27,7 @@ export interface Transaction {
   network?: string;
   hash?: string;
   fee?: number;
+  description?: string;
 }
 
 export interface UserData {
@@ -200,6 +201,7 @@ export const getTxLabel = (tx: Transaction): string => {
     case "withdraw": return `Withdraw ${tx.coin}`;
     case "receive": return `Receive ${tx.coin} to Wallet`;
     case "send": return `Send ${tx.coin} to Wallet`;
+    case "bill": return tx.description || "Bill Payment";
     default: return tx.type;
   }
 };
@@ -213,6 +215,7 @@ export const getTxIcon = (tx: Transaction): "arrow-up-right" | "arrow-down-left"
     case "receive": return "arrow-down-left";
     case "deposit": return "arrow-down";
     case "swap": return "arrow-up-right";
+    case "bill": return "arrow-up-right";
     default: return "arrow-up-right";
   }
 };

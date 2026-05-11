@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { store, COINS, coinToUsd, usdToNgn, formatUsd, formatNgn, formatCoin, type CoinId } from "@/lib/crypto";
 import CoinIcon from "@/components/CoinIcon";
-import { Plus, ArrowDown, ArrowUp, ArrowLeftRight, Gift, Bell, X, Search } from "lucide-react";
+import { Plus, ArrowDown, ArrowUp, ArrowLeftRight, Gift, Bell, X, Search, Receipt as ReceiptIcon } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { DashboardSkeleton } from "@/components/LoadingSkeleton";
 import PageTransition from "@/components/PageTransition";
@@ -156,11 +156,12 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex justify-center gap-4">
+        <div className="grid grid-cols-5 gap-2">
           {[
             { icon: ArrowDown, label: "Deposit", action: "deposit" as const },
             { icon: ArrowUp, label: "Withdraw", action: "withdraw" as const },
             { icon: ArrowLeftRight, label: "Swap", to: "/swap" },
+            { icon: ReceiptIcon, label: "Bills", to: "/bills" },
             { icon: Gift, label: "Earn", to: "/referral", accent: true },
           ].map((a) => (
             <button
@@ -169,10 +170,10 @@ export default function Dashboard() {
                 if (a.action) openPicker(a.action);
                 else if (a.to) navigate(a.to);
               }}
-              className="flex flex-col items-center gap-2"
+              className="flex flex-col items-center gap-1.5"
             >
-              <div className={`h-14 w-14 rounded-2xl flex items-center justify-center ${a.accent ? "bg-destructive/80" : "bg-secondary"}`}>
-                <a.icon size={22} className={a.accent ? "text-destructive-foreground" : "text-foreground"} />
+              <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${a.accent ? "bg-destructive/80" : "bg-secondary"}`}>
+                <a.icon size={20} className={a.accent ? "text-destructive-foreground" : "text-foreground"} />
               </div>
               <span className="text-[11px] text-muted-foreground">{a.label}</span>
             </button>
