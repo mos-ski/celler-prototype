@@ -113,7 +113,9 @@ export default function BillPay() {
             <p className="text-xs text-muted-foreground">Naira Balance</p>
             <p className="text-lg font-bold">{formatNgn(ngnBalance)}</p>
           </div>
-          <span className="text-3xl">{cat.emoji}</span>
+          <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${cat.accent}`}>
+            <cat.icon size={22} />
+          </div>
         </div>
 
         {/* Provider */}
@@ -132,9 +134,15 @@ export default function BillPay() {
                     : "border-border/40 bg-card hover:bg-secondary/50"
                 }`}
               >
-                <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-white text-[10px] font-bold ${p.color}`}>
-                  {p.logo}
-                </div>
+                {p.logoUrl ? (
+                  <div className="h-9 w-9 rounded-lg bg-white flex items-center justify-center overflow-hidden shrink-0">
+                    <img src={p.logoUrl} alt={p.name} className="h-7 w-7 object-contain" loading="lazy" />
+                  </div>
+                ) : (
+                  <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-white text-[10px] font-bold shrink-0 ${p.color}`}>
+                    {p.initials}
+                  </div>
+                )}
                 <span className="text-sm font-medium truncate">{p.name}</span>
               </button>
             ))}
