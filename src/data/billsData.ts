@@ -1,10 +1,13 @@
-export type BillCategory = "airtime" | "data" | "electricity" | "tv";
+import { Smartphone, Wifi, Zap, Tv, Trophy, type LucideIcon } from "lucide-react";
+
+export type BillCategory = "airtime" | "data" | "electricity" | "tv" | "betting";
 
 export interface BillProvider {
   id: string;
   name: string;
-  logo: string; // emoji or short label
-  color: string; // tailwind bg color class
+  logoUrl?: string;
+  initials: string;
+  color: string; // tailwind bg color class (fallback)
 }
 
 export interface DataPlan {
@@ -19,39 +22,54 @@ export interface TvPackage {
   amountNgn: number;
 }
 
-export const BILL_CATEGORIES: { id: BillCategory; label: string; emoji: string; description: string }[] = [
-  { id: "airtime", label: "Airtime", emoji: "📱", description: "Top up any phone number" },
-  { id: "data", label: "Data", emoji: "🌐", description: "Buy mobile data bundles" },
-  { id: "electricity", label: "Electricity", emoji: "💡", description: "Pay your electricity bill" },
-  { id: "tv", label: "TV", emoji: "📺", description: "Renew your cable subscription" },
+export const BILL_CATEGORIES: {
+  id: BillCategory;
+  label: string;
+  icon: LucideIcon;
+  description: string;
+  accent: string; // tailwind bg/text classes for the icon tile
+}[] = [
+  { id: "airtime", label: "Airtime", icon: Smartphone, description: "Top up any phone number", accent: "bg-blue-500/10 text-blue-500" },
+  { id: "data", label: "Data", icon: Wifi, description: "Buy mobile data bundles", accent: "bg-emerald-500/10 text-emerald-500" },
+  { id: "electricity", label: "Electricity", icon: Zap, description: "Pay your electricity bill", accent: "bg-amber-500/10 text-amber-500" },
+  { id: "tv", label: "TV", icon: Tv, description: "Renew your cable subscription", accent: "bg-purple-500/10 text-purple-500" },
+  { id: "betting", label: "Betting", icon: Trophy, description: "Fund your betting wallet", accent: "bg-rose-500/10 text-rose-500" },
 ];
 
 export const PROVIDERS: Record<BillCategory, BillProvider[]> = {
   airtime: [
-    { id: "mtn", name: "MTN", logo: "MTN", color: "bg-yellow-500" },
-    { id: "glo", name: "Glo", logo: "Glo", color: "bg-green-600" },
-    { id: "airtel", name: "Airtel", logo: "Airtel", color: "bg-red-600" },
-    { id: "9mobile", name: "9mobile", logo: "9", color: "bg-emerald-700" },
+    { id: "mtn", name: "MTN", logoUrl: "https://cdn.worldvectorlogo.com/logos/mtn-new-logo.svg", initials: "MTN", color: "bg-yellow-500" },
+    { id: "glo", name: "Glo", logoUrl: "https://cdn.worldvectorlogo.com/logos/glo-1.svg", initials: "Glo", color: "bg-green-600" },
+    { id: "airtel", name: "Airtel", logoUrl: "https://cdn.worldvectorlogo.com/logos/airtel-3.svg", initials: "Airtel", color: "bg-red-600" },
+    { id: "9mobile", name: "9mobile", logoUrl: "https://cdn.worldvectorlogo.com/logos/9mobile.svg", initials: "9", color: "bg-emerald-700" },
   ],
   data: [
-    { id: "mtn", name: "MTN", logo: "MTN", color: "bg-yellow-500" },
-    { id: "glo", name: "Glo", logo: "Glo", color: "bg-green-600" },
-    { id: "airtel", name: "Airtel", logo: "Airtel", color: "bg-red-600" },
-    { id: "9mobile", name: "9mobile", logo: "9", color: "bg-emerald-700" },
+    { id: "mtn", name: "MTN", logoUrl: "https://cdn.worldvectorlogo.com/logos/mtn-new-logo.svg", initials: "MTN", color: "bg-yellow-500" },
+    { id: "glo", name: "Glo", logoUrl: "https://cdn.worldvectorlogo.com/logos/glo-1.svg", initials: "Glo", color: "bg-green-600" },
+    { id: "airtel", name: "Airtel", logoUrl: "https://cdn.worldvectorlogo.com/logos/airtel-3.svg", initials: "Airtel", color: "bg-red-600" },
+    { id: "9mobile", name: "9mobile", logoUrl: "https://cdn.worldvectorlogo.com/logos/9mobile.svg", initials: "9", color: "bg-emerald-700" },
   ],
   electricity: [
-    { id: "ekedc", name: "Eko Electric (EKEDC)", logo: "EK", color: "bg-blue-600" },
-    { id: "ikedc", name: "Ikeja Electric (IKEDC)", logo: "IK", color: "bg-orange-600" },
-    { id: "aedc", name: "Abuja Electric (AEDC)", logo: "AB", color: "bg-indigo-600" },
-    { id: "phed", name: "Port Harcourt Electric", logo: "PH", color: "bg-cyan-600" },
-    { id: "ibedc", name: "Ibadan Electric (IBEDC)", logo: "IB", color: "bg-amber-600" },
-    { id: "kedco", name: "Kano Electric (KEDCO)", logo: "KN", color: "bg-rose-600" },
+    { id: "ekedc", name: "Eko Electric (EKEDC)", initials: "EK", color: "bg-blue-600" },
+    { id: "ikedc", name: "Ikeja Electric (IKEDC)", initials: "IK", color: "bg-orange-600" },
+    { id: "aedc", name: "Abuja Electric (AEDC)", initials: "AB", color: "bg-indigo-600" },
+    { id: "phed", name: "Port Harcourt Electric", initials: "PH", color: "bg-cyan-600" },
+    { id: "ibedc", name: "Ibadan Electric (IBEDC)", initials: "IB", color: "bg-amber-600" },
+    { id: "kedco", name: "Kano Electric (KEDCO)", initials: "KN", color: "bg-rose-600" },
   ],
   tv: [
-    { id: "dstv", name: "DStv", logo: "DStv", color: "bg-blue-700" },
-    { id: "gotv", name: "GOtv", logo: "GO", color: "bg-green-700" },
-    { id: "startimes", name: "Startimes", logo: "ST", color: "bg-orange-700" },
-    { id: "showmax", name: "Showmax", logo: "SM", color: "bg-purple-700" },
+    { id: "dstv", name: "DStv", logoUrl: "https://cdn.worldvectorlogo.com/logos/dstv-1.svg", initials: "DStv", color: "bg-blue-700" },
+    { id: "gotv", name: "GOtv", logoUrl: "https://cdn.worldvectorlogo.com/logos/gotv.svg", initials: "GO", color: "bg-green-700" },
+    { id: "startimes", name: "Startimes", logoUrl: "https://cdn.worldvectorlogo.com/logos/startimes.svg", initials: "ST", color: "bg-orange-700" },
+    { id: "showmax", name: "Showmax", logoUrl: "https://cdn.worldvectorlogo.com/logos/showmax.svg", initials: "SM", color: "bg-purple-700" },
+  ],
+  betting: [
+    { id: "bet9ja", name: "Bet9ja", logoUrl: "https://cdn.worldvectorlogo.com/logos/bet9ja.svg", initials: "B9", color: "bg-green-600" },
+    { id: "sportybet", name: "SportyBet", logoUrl: "https://cdn.worldvectorlogo.com/logos/sportybet.svg", initials: "SB", color: "bg-red-600" },
+    { id: "1xbet", name: "1xBet", logoUrl: "https://cdn.worldvectorlogo.com/logos/1xbet-2.svg", initials: "1X", color: "bg-blue-700" },
+    { id: "betking", name: "BetKing", logoUrl: "https://cdn.worldvectorlogo.com/logos/betking.svg", initials: "BK", color: "bg-yellow-600" },
+    { id: "nairabet", name: "NairaBet", initials: "NB", color: "bg-emerald-700" },
+    { id: "merrybet", name: "MerryBet", initials: "MB", color: "bg-orange-600" },
   ],
 };
 
