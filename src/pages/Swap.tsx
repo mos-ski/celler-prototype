@@ -6,6 +6,9 @@ import TransactionTimeline from "@/components/TransactionTimeline";
 import CoinIcon from "@/components/CoinIcon";
 import { useNavigate } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
+import { worldcup } from "@/lib/worldcup";
+import { BONUS_CARDS } from "@/data/worldcupData";
+import { toast } from "sonner";
 
 type Step = "amount" | "select-from" | "select-to" | "review" | "success";
 
@@ -31,6 +34,11 @@ export default function SwapPage() {
     store.updateWalletCoin(fromCoin, -qty);
     store.updateWalletCoin(toCoin, toQty);
     store.addTransaction({ id: genId(), type: "swap", fromCoin, toCoin, quantity: qty, toQuantity: toQty, usdValue, ngnValue: usdToNgn(usdValue), date: new Date().toISOString(), status: "completed" });
+    worldcup.awardBonus("crypto");
+    toast("🏆 +" + BONUS_CARDS.crypto + " Worldcup cards", {
+      description: "Crypto trade bonus",
+      action: { label: "Open", onClick: () => navigate("/worldcup") },
+    });
     setStep("success");
   };
 
