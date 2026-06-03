@@ -1,4 +1,5 @@
 import { COUNTRIES, MILESTONES, BONUS_CARDS, BONUS_LABELS, type BonusReason } from "@/data/worldcupData";
+export type { BonusReason };
 import { store, genId } from "@/lib/crypto";
 
 const KEY = "cex_worldcup_v1";
