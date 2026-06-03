@@ -38,6 +38,7 @@ import GiftcardSell from "./pages/GiftcardSell";
 import GiftcardOrders from "./pages/GiftcardOrders";
 import Bills from "./pages/Bills";
 import BillPay from "./pages/BillPay";
+import Worldcup from "./pages/Worldcup";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCustomers from "./pages/admin/Customers";
 import AdminCustomerDetail from "./pages/admin/CustomerDetail";
@@ -90,6 +91,7 @@ const App = () => (
                 <Route path="/giftcard-orders" element={<GiftcardOrders />} />
                 <Route path="/bills" element={<Bills />} />
                 <Route path="/bills/:category" element={<BillPay />} />
+                <Route path="/worldcup" element={<Worldcup />} />
               </Route>
               {/* Admin routes */}
               <Route path="/admin" element={<AdminLayout />}>

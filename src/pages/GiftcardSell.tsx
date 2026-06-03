@@ -13,6 +13,9 @@ import {
 import { NGN_RATE, formatNgn, genId } from "@/lib/crypto";
 import { useToast } from "@/hooks/use-toast";
 import PageTransition from "@/components/PageTransition";
+import { worldcup } from "@/lib/worldcup";
+import { BONUS_CARDS } from "@/data/worldcupData";
+import { toast as sonnerToast } from "sonner";
 
 type Step = "amount" | "upload" | "review" | "success";
 
@@ -74,6 +77,11 @@ export default function GiftcardSell() {
       giftcardStore.addOrder(order);
       setSubmitting(false);
       setStep("success");
+      worldcup.awardBonus("giftcard");
+      sonnerToast("🏆 +" + BONUS_CARDS.giftcard + " Worldcup cards", {
+        description: "Gift card bonus",
+        action: { label: "Open", onClick: () => navigate("/worldcup") },
+      });
     }, 1500);
   };
 

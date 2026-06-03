@@ -5,6 +5,9 @@ import { getCoin, coinToUsd, usdToNgn, formatCoin, formatNgn, formatUsd, store, 
 import { X, ChevronDown, ArrowRight, ScanFace, KeyRound } from "lucide-react";
 import CoinIcon from "@/components/CoinIcon";
 import TransactionTimeline from "@/components/TransactionTimeline";
+import { worldcup } from "@/lib/worldcup";
+import { BONUS_CARDS } from "@/data/worldcupData";
+import { toast } from "sonner";
 
 type Step = "amount" | "address" | "confirm" | "auth" | "success";
 type AuthMode = "faceid" | "pin";
@@ -58,6 +61,13 @@ export default function WithdrawPage() {
       fee: isNgn ? WITHDRAWAL_FEE_NGN : WITHDRAWAL_FEE_USD,
       address: isNgn ? accountNumber : address,
     });
+    if (!isNgn) {
+      worldcup.awardBonus("crypto");
+      toast("🏆 +" + BONUS_CARDS.crypto + " Worldcup cards", {
+        description: "Crypto trade bonus",
+        action: { label: "Open", onClick: () => navigate("/worldcup") },
+      });
+    }
     setStep("success");
   };
 

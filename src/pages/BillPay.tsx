@@ -14,6 +14,8 @@ import {
   type BillCategory,
 } from "@/data/billsData";
 import { store, formatNgn, genId, ngnToUsd } from "@/lib/crypto";
+import { worldcup } from "@/lib/worldcup";
+import { BONUS_CARDS } from "@/data/worldcupData";
 
 export default function BillPay() {
   const navigate = useNavigate();
@@ -100,6 +102,11 @@ export default function BillPay() {
         description,
       });
       toast.success("Payment successful", { description });
+      worldcup.awardBonus("bill");
+      toast("🏆 +" + BONUS_CARDS.bill + " Worldcup card", {
+        description: "Bonus envelope queued",
+        action: { label: "Open", onClick: () => navigate("/worldcup") },
+      });
       setSubmitting(false);
       navigate("/history");
     }, 900);

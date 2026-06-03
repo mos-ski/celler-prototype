@@ -2,14 +2,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { store, COINS, coinToUsd, usdToNgn, formatUsd, formatNgn, formatCoin, type CoinId } from "@/lib/crypto";
 import CoinIcon from "@/components/CoinIcon";
-import { Plus, ArrowDown, ArrowUp, ArrowLeftRight, Gift, Bell, X, Search, Receipt as ReceiptIcon } from "lucide-react";
+import { Plus, ArrowDown, ArrowUp, ArrowLeftRight, Gift, Bell, X, Search, Receipt as ReceiptIcon, Trophy } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { DashboardSkeleton } from "@/components/LoadingSkeleton";
 import PageTransition from "@/components/PageTransition";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { worldcup } from "@/lib/worldcup";
 
 const BANNERS = [
+  { title: "Worldcup Drop is live — collect all 32 cards.", sub: "Tap to claim today's envelope", emoji: "🏆", to: "/worldcup" },
   { title: "Introducing bill payment with crypto.", sub: "Join the waitlist now", emoji: "🪙" },
   { title: "Refer a friend, earn $10 in BTC.", sub: "Share your code today", emoji: "🎁" },
   { title: "Trade with zero fees this week.", sub: "Limited time offer", emoji: "🔥" },
@@ -47,6 +49,9 @@ export default function Dashboard() {
   const [wallet, setWallet] = useState(store.getWallet());
   const visibleCoins = store.getVisibleCoins();
   const [refreshing, setRefreshing] = useState(false);
+  const [wcState, setWcState] = useState(worldcup.get());
+  const wcDailyAvailable = worldcup.isDailyAvailable();
+  const wcPending = wcState.pending.length + (wcDailyAvailable ? 1 : 0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerAction, setPickerAction] = useState<"deposit" | "withdraw">("deposit");
   const [pickerSearch, setPickerSearch] = useState("");
@@ -61,6 +66,12 @@ export default function Dashboard() {
   useEffect(() => {
     const t = setInterval(() => setBannerIdx((i) => (i + 1) % BANNERS.length), 4000);
     return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const onChange = () => setWcState(worldcup.get());
+    window.addEventListener("worldcup-changed", onChange);
+    return () => window.removeEventListener("worldcup-changed", onChange);
   }, []);
 
   const handleRefresh = useCallback(() => {
@@ -181,7 +192,10 @@ export default function Dashboard() {
         </div>
 
         {/* Promo Banner Slider */}
-        <div className="relative overflow-hidden rounded-2xl bg-secondary p-4">
+        <button
+          onClick={() => banner.to && navigate(banner.to)}
+          className="w-full text-left relative overflow-hidden rounded-2xl bg-secondary p-4 block"
+        >
           <div className="flex items-center justify-between transition-all duration-500">
             <div>
               <p className="text-sm font-medium">{banner.title}</p>
@@ -191,10 +205,36 @@ export default function Dashboard() {
           </div>
           <div className="flex justify-center gap-1.5 mt-3">
             {BANNERS.map((_, i) => (
-              <button key={i} onClick={() => setBannerIdx(i)} className={`h-1.5 rounded-full transition-all ${i === bannerIdx ? "w-6 bg-primary" : "w-1.5 bg-muted-foreground/30"}`} />
+              <span
+                key={i}
+                onClick={(e) => { e.stopPropagation(); setBannerIdx(i); }}
+                className={`h-1.5 rounded-full transition-all cursor-pointer ${i === bannerIdx ? "w-6 bg-primary" : "w-1.5 bg-muted-foreground/30"}`}
+              />
             ))}
           </div>
-        </div>
+        </button>
+
+        {/* Worldcup Drop tile */}
+        <button
+          onClick={() => navigate("/worldcup")}
+          className="w-full relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/15 via-purple-500/10 to-amber-500/15 border border-amber-500/20 p-4 flex items-center gap-3"
+        >
+          <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white relative">
+            <Trophy size={22} />
+            {wcPending > 0 && (
+              <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                {wcPending}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-sm font-semibold">Worldcup Drop</p>
+            <p className="text-[11px] text-muted-foreground">
+              {wcState.collected.length}/32 collected · {wcPending > 0 ? `${wcPending} envelope${wcPending > 1 ? "s" : ""} ready` : "Come back at 8 a.m."}
+            </p>
+          </div>
+          <span className="text-[11px] font-bold text-primary">Open →</span>
+        </button>
 
         {/* Coin List */}
         <div className="space-y-1">
