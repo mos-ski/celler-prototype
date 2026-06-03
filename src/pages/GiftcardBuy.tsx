@@ -13,6 +13,8 @@ import {
 } from "@/data/giftcardData";
 import { NGN_RATE, formatNgn, formatUsd, genId, ngnToUsd, store } from "@/lib/crypto";
 import PageTransition from "@/components/PageTransition";
+import { worldcup } from "@/lib/worldcup";
+import { BONUS_CARDS } from "@/data/worldcupData";
 
 type Step = "amount" | "review" | "success";
 
@@ -78,6 +80,11 @@ export default function GiftcardBuy() {
       setStep("success");
       toast.success("Gift card delivered", {
         description: `${brand.name} ${brand.currency} ${effectiveAmount} is ready.`,
+      });
+      worldcup.awardBonus("giftcard");
+      toast("🏆 +" + BONUS_CARDS.giftcard + " Worldcup cards", {
+        description: "Gift card bonus",
+        action: { label: "Open", onClick: () => navigate("/worldcup") },
       });
     }, 900);
   };
