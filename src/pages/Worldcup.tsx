@@ -273,13 +273,21 @@ export default function Worldcup() {
           </div>
         )}
 
-        {/* Dev: reset for testing */}
-        <button
-          onClick={() => { worldcup.reset(); toast("Drop reset"); }}
-          className="w-full text-[10px] text-muted-foreground/60 underline pt-4"
-        >
-          Reset drop (dev)
-        </button>
+        {/* Dev: test helpers */}
+        <div className="flex gap-2 pt-4">
+          <button
+            onClick={() => { worldcup.queueTestPull(); toast("Test envelope queued"); }}
+            className="flex-1 py-2 rounded-xl bg-secondary text-xs font-medium"
+          >
+            +Test envelope
+          </button>
+          <button
+            onClick={() => { worldcup.reset(); toast("Drop reset"); }}
+            className="flex-1 py-2 rounded-xl bg-secondary text-xs font-medium text-destructive"
+          >
+            Reset drop
+          </button>
+        </div>
       </div>
 
       {/* Reveal dialog */}

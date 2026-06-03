@@ -1,4 +1,5 @@
 import { COUNTRIES, MILESTONES, BONUS_CARDS, BONUS_LABELS, type BonusReason } from "@/data/worldcupData";
+export type { BonusReason };
 import { store, genId } from "@/lib/crypto";
 
 const KEY = "cex_worldcup_v1";
@@ -100,6 +101,20 @@ export const worldcup = {
       id: genId(),
       reason,
       cards: BONUS_CARDS[reason],
+      createdAt: new Date().toISOString(),
+    };
+    s.pending.unshift(pull);
+    write(s);
+    return pull;
+  },
+
+  /** Dev helper: queue an immediate pull with N cards (default 3). */
+  queueTestPull(cards = 3): PendingPull {
+    const s = read();
+    const pull: PendingPull = {
+      id: genId(),
+      reason: "daily",
+      cards,
       createdAt: new Date().toISOString(),
     };
     s.pending.unshift(pull);
