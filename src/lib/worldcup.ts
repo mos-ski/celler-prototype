@@ -108,6 +108,20 @@ export const worldcup = {
     return pull;
   },
 
+  /** Dev helper: queue an immediate pull with N cards (default 3). */
+  queueTestPull(cards = 3): PendingPull {
+    const s = read();
+    const pull: PendingPull = {
+      id: genId(),
+      reason: "daily",
+      cards,
+      createdAt: new Date().toISOString(),
+    };
+    s.pending.unshift(pull);
+    write(s);
+    return pull;
+  },
+
   /** Open the given pull: draws `cards` random uncollected countries, removes pull from queue. */
   openPull(pullId: string): { pull: PendingPull; revealed: string[] } | null {
     const s = read();
