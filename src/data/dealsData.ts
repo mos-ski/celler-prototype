@@ -6,6 +6,8 @@ export interface Deal {
   originalPrice: number;
   dealPrice: number;
   value: string;
+  prefillAmount?: number;  // for airtime deals — prefills the amount field
+  prefillPlanId?: string;  // for data deals — pre-selects a plan
 }
 
 export const DEALS: Deal[] = [
@@ -17,15 +19,17 @@ export const DEALS: Deal[] = [
     originalPrice: 1000,
     dealPrice: 800,
     value: "₦1,000",
+    prefillAmount: 800,
   },
   {
     id: "deal-2",
     category: "data",
     provider: "mtn",
     description: "MTN Data",
-    originalPrice: 1000,
+    originalPrice: 1500,
     dealPrice: 800,
     value: "2GB",
+    prefillPlanId: "mtn-2gb",
   },
   {
     id: "deal-3",
@@ -35,6 +39,7 @@ export const DEALS: Deal[] = [
     originalPrice: 500,
     dealPrice: 400,
     value: "₦500",
+    prefillAmount: 400,
   },
   {
     id: "deal-4",
@@ -44,5 +49,6 @@ export const DEALS: Deal[] = [
     originalPrice: 500,
     dealPrice: 350,
     value: "1GB",
+    prefillPlanId: "glo-1gb",
   },
 ];

@@ -6,20 +6,38 @@ import {
   Bell, Eye, EyeOff, Copy, Phone, Wifi, Zap, Tv,
   Dices, ArrowUp, ArrowDown, Clock, Check,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 const ACCOUNT_NUMBER = "0765 6736 7282";
 
-const TILES = [
+type TileConfig = {
+  label: string;
+  icon: React.ElementType;
+  to: string;
+  color: string;
+  emphasized?: boolean;
+  soon?: boolean;
+};
+
+const TILES: TileConfig[] = [
   { label: "Airtime",     icon: Phone,     to: "/a/bills/airtime",     color: "#6366f1" },
   { label: "Data",        icon: Wifi,      to: "/a/bills/data",        color: "#8b5cf6" },
+  { label: "Withdraw",    icon: ArrowUp,   to: "/a/withdraw/NGN",      color: "#94a3b8" },
+  { label: "Deposit",     icon: ArrowDown, to: "/a/receive/NGN",       color: "#6366f1", emphasized: true },
   { label: "Electricity", icon: Zap,       to: "/a/bills/electricity", color: "#f59e0b" },
   { label: "TV",          icon: Tv,        to: "/a/bills/tv",          color: "#10b981" },
-  { label: "Betting",     icon: Dices,     to: "/a/bills/betting",     color: "#ef4444" },
-  { label: "Withdraw",    icon: ArrowUp,   to: "/a/withdraw/NGN",      color: "#6366f1" },
-  { label: "Deposit",     icon: ArrowDown, to: "/a/receive/NGN",       color: "#8b5cf6" },
+  { label: "Betting",     icon: Dices,     to: "/a/bills/betting",     color: "#ef4444", soon: true },
   { label: "History",     icon: Clock,     to: "/a/history",           color: "#64748b" },
 ];
+
+function networkColor(network: string) {
+  const n = network.toLowerCase();
+  if (n === "mtn") return "bg-yellow-500";
+  if (n === "glo") return "bg-green-600";
+  if (n === "airtel") return "bg-red-600";
+  if (n === "9mobile") return "bg-emerald-700";
+  return "bg-primary";
+}
 
 export default function AndroidHome() {
   const { user } = useAuth();
@@ -29,13 +47,54 @@ export default function AndroidHome() {
 
   const wallet = store.getWallet();
   const ngnBalance = wallet["NGN"] || 0;
-  const transactions = store.getTransactions().slice(0, 4);
   const firstName = user?.fullName?.split(" ")[0] ?? "there";
+
+  // Parse unique recent phone numbers from bill transactions
+  const recentContacts = useMemo(() => {
+    const txs = store.getTransactions().filter(
+      (tx) =>
+        tx.type === "bill" &&
+        (tx.description?.includes("Airtime") || tx.description?.includes("Data")) &&
+        tx.description?.includes(" - ")
+    );
+    const seen = new Set<string>();
+    const contacts: Array<{
+      network: string;
+      providerId: string;
+      phone: string;
+      category: "airtime" | "data";
+    }> = [];
+    for (const tx of txs) {
+      const desc = tx.description ?? "";
+      const dashIdx = desc.lastIndexOf(" - ");
+      if (dashIdx === -1) continue;
+      const phone = desc.slice(dashIdx + 3).trim();
+      if (!phone || phone.length < 7 || seen.has(phone)) continue;
+      seen.add(phone);
+      const firstWord = desc.split(" ")[0];
+      const category = desc.includes("Airtime") ? ("airtime" as const) : ("data" as const);
+      contacts.push({ network: firstWord, providerId: firstWord.toLowerCase(), phone, category });
+      if (contacts.length >= 4) break;
+    }
+    return contacts;
+  }, []);
+
+  const recentTxs = store
+    .getTransactions()
+    .filter((tx) => ["bill", "deposit", "withdraw"].includes(tx.type))
+    .slice(0, 4);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(ACCOUNT_NUMBER.replace(/\s/g, ""));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getDealUrl = (deal: (typeof DEALS)[0]) => {
+    const params = new URLSearchParams({ provider: deal.provider });
+    if (deal.prefillAmount) params.set("amount", String(deal.prefillAmount));
+    if (deal.prefillPlanId) params.set("plan", deal.prefillPlanId);
+    return `/a/bills/${deal.category}?${params.toString()}`;
   };
 
   return (
@@ -50,7 +109,7 @@ export default function AndroidHome() {
           <span className="text-base font-semibold">Hello, {firstName}</span>
         </div>
         <button
-          onClick={() => navigate("/notifications")}
+          onClick={() => navigate("/a/notifications")}
           className="relative h-10 w-10 rounded-full bg-secondary flex items-center justify-center"
         >
           <Bell size={18} className="text-muted-foreground" />
@@ -76,7 +135,10 @@ export default function AndroidHome() {
             </button>
           </div>
         </div>
-        <div className="flex items-center justify-between px-6 py-3" style={{ background: "rgba(255,255,255,0.08)" }}>
+        <div
+          className="flex items-center justify-between px-6 py-3"
+          style={{ background: "rgba(255,255,255,0.08)" }}
+        >
           <p className="text-white/70 text-xs tracking-wide font-medium">
             YOUR ACCT NO: {ACCOUNT_NUMBER}
           </p>
@@ -86,20 +148,65 @@ export default function AndroidHome() {
         </div>
       </div>
 
-      {/* Action Tiles */}
+      {/* Recent Contacts — only shown when there's bill history with phone numbers */}
+      {recentContacts.length > 0 && (
+        <div>
+          <p className="text-sm font-semibold mb-3">Recent Numbers</p>
+          <div
+            className="flex gap-5 overflow-x-auto pb-1 -mx-4 px-4"
+            style={{ scrollbarWidth: "none" }}
+          >
+            {recentContacts.map((contact) => (
+              <button
+                key={contact.phone}
+                onClick={() =>
+                  navigate(
+                    `/a/bills/${contact.category}?provider=${contact.providerId}&identifier=${contact.phone}`
+                  )
+                }
+                className="flex flex-col items-center gap-1.5 shrink-0"
+              >
+                <div
+                  className={`h-12 w-12 rounded-full flex items-center justify-center text-white text-[11px] font-bold ${networkColor(contact.network)}`}
+                >
+                  {contact.network.slice(0, 3)}
+                </div>
+                <span className="text-[10px] font-medium text-muted-foreground">{contact.network}</span>
+                <span className="text-[10px] text-muted-foreground">{contact.phone.slice(0, 8)}...</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Action Tiles — Row 1: Airtime, Data, Withdraw, Deposit(emphasized); Row 2: Electricity, TV, Betting(Soon), History */}
       <div className="grid grid-cols-4 gap-3">
         {TILES.map((tile) => (
           <button
             key={tile.label}
             onClick={() => navigate(tile.to)}
-            className="flex flex-col items-center gap-2"
+            className="flex flex-col items-center gap-2 relative"
           >
-            <div
-              className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-sm"
-              style={{ background: `${tile.color}18` }}
-            >
-              <tile.icon size={22} style={{ color: tile.color }} />
-            </div>
+            {tile.emphasized ? (
+              <div
+                className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-md"
+                style={{ background: tile.color }}
+              >
+                <tile.icon size={22} className="text-white" />
+              </div>
+            ) : (
+              <div
+                className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-sm"
+                style={{ background: `${tile.color}20` }}
+              >
+                <tile.icon size={22} style={{ color: tile.color }} />
+              </div>
+            )}
+            {tile.soon && (
+              <span className="absolute -top-1 right-2 px-1.5 py-0.5 rounded-full text-[8px] font-bold bg-red-500 text-white leading-tight">
+                Soon
+              </span>
+            )}
             <span className="text-[11px] text-muted-foreground font-medium">{tile.label}</span>
           </button>
         ))}
@@ -126,7 +233,7 @@ export default function AndroidHome() {
               </div>
               <div className="px-3 pb-3 pt-1">
                 <button
-                  onClick={() => navigate(`/a/bills/${deal.category}`)}
+                  onClick={() => navigate(getDealUrl(deal))}
                   className="w-full py-2 rounded-xl text-xs font-semibold text-white"
                   style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
                 >
@@ -139,11 +246,11 @@ export default function AndroidHome() {
       </div>
 
       {/* Recent Activity */}
-      {transactions.length > 0 && (
+      {recentTxs.length > 0 && (
         <div>
           <p className="text-sm font-semibold mb-3">Recent</p>
           <div className="space-y-1">
-            {transactions.map((tx) => {
+            {recentTxs.map((tx) => {
               const isCredit = tx.type === "deposit" || tx.type === "receive";
               const emoji =
                 tx.type === "bill" ? "📱"
@@ -153,7 +260,7 @@ export default function AndroidHome() {
               return (
                 <button
                   key={tx.id}
-                  onClick={() => navigate(`/transaction/${tx.id}`)}
+                  onClick={() => navigate(`/a/transaction/${tx.id}`)}
                   className="w-full flex items-center justify-between py-3 border-b border-border/30 last:border-0 text-left"
                 >
                   <div className="flex items-center gap-3">
@@ -165,7 +272,10 @@ export default function AndroidHome() {
                         {tx.description ?? tx.type}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(tx.date).toLocaleDateString("en-NG", { day: "numeric", month: "short" })}
+                        {new Date(tx.date).toLocaleDateString("en-NG", {
+                          day: "numeric",
+                          month: "short",
+                        })}
                       </p>
                     </div>
                   </div>

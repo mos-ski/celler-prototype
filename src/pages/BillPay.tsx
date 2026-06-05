@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import PageTransition from "@/components/PageTransition";
@@ -19,14 +19,26 @@ import { BONUS_CARDS } from "@/data/worldcupData";
 
 export default function BillPay() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { category } = useParams<{ category: BillCategory }>();
+  const isAndroid = location.pathname.startsWith("/a/");
   const cat = BILL_CATEGORIES.find((c) => c.id === category);
   const providers = category ? PROVIDERS[category] : [];
 
-  const [providerId, setProviderId] = useState<string>(providers[0]?.id ?? "");
-  const [identifier, setIdentifier] = useState("");
-  const [amount, setAmount] = useState("");
-  const [planId, setPlanId] = useState("");
+  const prefillProvider = searchParams.get("provider");
+  const prefillIdentifier = searchParams.get("identifier");
+  const prefillAmount = searchParams.get("amount");
+  const prefillPlan = searchParams.get("plan");
+
+  const [providerId, setProviderId] = useState<string>(
+    prefillProvider && providers.find((p) => p.id === prefillProvider)
+      ? prefillProvider
+      : providers[0]?.id ?? ""
+  );
+  const [identifier, setIdentifier] = useState(prefillIdentifier ?? "");
+  const [amount, setAmount] = useState(prefillAmount ?? "");
+  const [planId, setPlanId] = useState(prefillPlan ?? "");
   const [submitting, setSubmitting] = useState(false);
   const [showPin, setShowPin] = useState(false);
 
@@ -60,7 +72,7 @@ export default function BillPay() {
       <PageTransition>
         <div className="pt-6">
           <p className="text-sm text-muted-foreground">Unknown bill category.</p>
-          <Button className="mt-4" onClick={() => navigate("/bills")}>Back to Bills</Button>
+          <Button className="mt-4" onClick={() => navigate(isAndroid ? "/a/bills" : "/bills")}>Back to Bills</Button>
         </div>
       </PageTransition>
     );
@@ -108,7 +120,7 @@ export default function BillPay() {
         action: { label: "Open", onClick: () => navigate("/worldcup") },
       });
       setSubmitting(false);
-      navigate("/history");
+      navigate(isAndroid ? "/a/history" : "/history");
     }, 900);
   };
 
@@ -148,15 +160,9 @@ export default function BillPay() {
                     : "border-border/40 bg-card hover:bg-secondary/50"
                 }`}
               >
-                {p.logoUrl ? (
-                  <div className="h-9 w-9 rounded-lg bg-white flex items-center justify-center overflow-hidden shrink-0">
-                    <img src={p.logoUrl} alt={p.name} className="h-7 w-7 object-contain" loading="lazy" />
-                  </div>
-                ) : (
-                  <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-white text-[10px] font-bold shrink-0 ${p.color}`}>
-                    {p.initials}
-                  </div>
-                )}
+                <div className={`h-9 w-9 rounded-lg flex items-center justify-center text-white text-[10px] font-bold shrink-0 ${p.color}`}>
+                  {p.initials}
+                </div>
                 <span className="text-sm font-medium truncate">{p.name}</span>
               </button>
             ))}
