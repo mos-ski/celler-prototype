@@ -6,7 +6,7 @@ import {
   Bell, Eye, EyeOff, Copy, Phone, Wifi, Zap, Tv,
   Dices, ArrowUp, ArrowDown, Clock, Check,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 const ACCOUNT_NUMBER = "0765 6736 7282";
 
@@ -30,14 +30,6 @@ const TILES: TileConfig[] = [
   { label: "History",     icon: Clock,     to: "/a/history",           color: "#64748b" },
 ];
 
-function networkColor(network: string) {
-  const n = network.toLowerCase();
-  if (n === "mtn") return "bg-yellow-500";
-  if (n === "glo") return "bg-green-600";
-  if (n === "airtel") return "bg-red-600";
-  if (n === "9mobile") return "bg-emerald-700";
-  return "bg-primary";
-}
 
 export default function AndroidHome() {
   const { user } = useAuth();
@@ -49,44 +41,6 @@ export default function AndroidHome() {
   const ngnBalance = wallet["NGN"] || 0;
   const firstName = user?.fullName?.split(" ")[0] ?? "there";
 
-  type RecentContact = {
-    network: string;
-    providerId: string;
-    phone: string;
-    category: "airtime" | "data";
-  };
-
-  const DEMO_CONTACTS: RecentContact[] = [
-    { network: "MTN",    providerId: "mtn",    phone: "08147833456", category: "airtime" },
-    { network: "Airtel", providerId: "airtel", phone: "08023456789", category: "airtime" },
-    { network: "Glo",    providerId: "glo",    phone: "07034567890", category: "data"    },
-    { network: "MTN",    providerId: "mtn",    phone: "09012345678", category: "data"    },
-  ];
-
-  // Parse unique recent phone numbers from bill transactions, fall back to demo contacts
-  const recentContacts = useMemo(() => {
-    const txs = store.getTransactions().filter(
-      (tx) =>
-        tx.type === "bill" &&
-        (tx.description?.includes("Airtime") || tx.description?.includes("Data")) &&
-        tx.description?.includes(" - ")
-    );
-    const seen = new Set<string>();
-    const contacts: RecentContact[] = [];
-    for (const tx of txs) {
-      const desc = tx.description ?? "";
-      const dashIdx = desc.lastIndexOf(" - ");
-      if (dashIdx === -1) continue;
-      const phone = desc.slice(dashIdx + 3).trim();
-      if (!phone || phone.length < 7 || seen.has(phone)) continue;
-      seen.add(phone);
-      const firstWord = desc.split(" ")[0];
-      const category = desc.includes("Airtime") ? ("airtime" as const) : ("data" as const);
-      contacts.push({ network: firstWord, providerId: firstWord.toLowerCase(), phone, category });
-      if (contacts.length >= 4) break;
-    }
-    return contacts.length > 0 ? contacts : DEMO_CONTACTS;
-  }, []);
 
   const recentTxs = store
     .getTransactions()
@@ -156,35 +110,6 @@ export default function AndroidHome() {
           </button>
         </div>
       </div>
-
-      {/* Recent Numbers */}
-      <div>
-          <p className="text-sm font-semibold mb-3">Recent Numbers</p>
-          <div
-            className="flex gap-5 overflow-x-auto pb-1 -mx-4 px-4"
-            style={{ scrollbarWidth: "none" }}
-          >
-            {recentContacts.map((contact) => (
-              <button
-                key={contact.phone}
-                onClick={() =>
-                  navigate(
-                    `/a/bills/${contact.category}?provider=${contact.providerId}&identifier=${contact.phone}`
-                  )
-                }
-                className="flex flex-col items-center gap-1.5 shrink-0"
-              >
-                <div
-                  className={`h-12 w-12 rounded-full flex items-center justify-center text-white text-[11px] font-bold ${networkColor(contact.network)}`}
-                >
-                  {contact.network.slice(0, 3)}
-                </div>
-                <span className="text-[10px] font-medium text-muted-foreground">{contact.network}</span>
-                <span className="text-[10px] text-muted-foreground">{contact.phone.slice(0, 8)}...</span>
-              </button>
-            ))}
-          </div>
-        </div>
 
       {/* Action Tiles — Row 1: Airtime, Data, Withdraw, Deposit(emphasized); Row 2: Electricity, TV, Betting(Soon), History */}
       <div className="grid grid-cols-4 gap-3">
