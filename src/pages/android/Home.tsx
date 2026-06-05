@@ -49,7 +49,21 @@ export default function AndroidHome() {
   const ngnBalance = wallet["NGN"] || 0;
   const firstName = user?.fullName?.split(" ")[0] ?? "there";
 
-  // Parse unique recent phone numbers from bill transactions
+  type RecentContact = {
+    network: string;
+    providerId: string;
+    phone: string;
+    category: "airtime" | "data";
+  };
+
+  const DEMO_CONTACTS: RecentContact[] = [
+    { network: "MTN",    providerId: "mtn",    phone: "08147833456", category: "airtime" },
+    { network: "Airtel", providerId: "airtel", phone: "08023456789", category: "airtime" },
+    { network: "Glo",    providerId: "glo",    phone: "07034567890", category: "data"    },
+    { network: "MTN",    providerId: "mtn",    phone: "09012345678", category: "data"    },
+  ];
+
+  // Parse unique recent phone numbers from bill transactions, fall back to demo contacts
   const recentContacts = useMemo(() => {
     const txs = store.getTransactions().filter(
       (tx) =>
@@ -58,12 +72,7 @@ export default function AndroidHome() {
         tx.description?.includes(" - ")
     );
     const seen = new Set<string>();
-    const contacts: Array<{
-      network: string;
-      providerId: string;
-      phone: string;
-      category: "airtime" | "data";
-    }> = [];
+    const contacts: RecentContact[] = [];
     for (const tx of txs) {
       const desc = tx.description ?? "";
       const dashIdx = desc.lastIndexOf(" - ");
@@ -76,7 +85,7 @@ export default function AndroidHome() {
       contacts.push({ network: firstWord, providerId: firstWord.toLowerCase(), phone, category });
       if (contacts.length >= 4) break;
     }
-    return contacts;
+    return contacts.length > 0 ? contacts : DEMO_CONTACTS;
   }, []);
 
   const recentTxs = store
@@ -148,9 +157,8 @@ export default function AndroidHome() {
         </div>
       </div>
 
-      {/* Recent Contacts — only shown when there's bill history with phone numbers */}
-      {recentContacts.length > 0 && (
-        <div>
+      {/* Recent Numbers */}
+      <div>
           <p className="text-sm font-semibold mb-3">Recent Numbers</p>
           <div
             className="flex gap-5 overflow-x-auto pb-1 -mx-4 px-4"
@@ -177,7 +185,6 @@ export default function AndroidHome() {
             ))}
           </div>
         </div>
-      )}
 
       {/* Action Tiles — Row 1: Airtime, Data, Withdraw, Deposit(emphasized); Row 2: Electricity, TV, Betting(Soon), History */}
       <div className="grid grid-cols-4 gap-3">
