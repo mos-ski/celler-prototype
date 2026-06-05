@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { to: "/a/home", label: "Home", icon: Home },
-  { to: "/bills", label: "Bills", icon: Receipt },
-  { to: "/history", label: "History", icon: Clock },
-  { to: "/referral", label: "Referral", icon: Users },
-  { to: "/profile", label: "Profile", icon: User },
+  { to: "/a/bills", label: "Bills", icon: Receipt },
+  { to: "/a/history", label: "History", icon: Clock },
+  { to: "/a/referral", label: "Referral", icon: Users },
+  { to: "/a/profile", label: "Profile", icon: User },
 ];
 
 export default function BottomNav() {
@@ -19,7 +19,7 @@ export default function BottomNav() {
         {NAV_ITEMS.map((item) => {
           const active =
             location.pathname === item.to ||
-            (item.to === "/bills" && location.pathname.startsWith("/bills"));
+            (item.to === "/a/bills" && location.pathname.startsWith("/a/bills"));
           return (
             <Link
               key={item.to}

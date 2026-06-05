@@ -109,7 +109,7 @@ const App = () => (
                 <Route path="notifications" element={<AdminPushNotifications />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
-              {/* Android / Zella bill payment version */}
+              {/* Android / Zella bill payment version — all routes prefixed /a/* */}
               <Route path="/a" element={<AndroidSplash />} />
               <Route path="/a/welcome" element={<Welcome />} />
               <Route path="/a/signin" element={<SignIn />} />
@@ -117,6 +117,23 @@ const App = () => (
               <Route path="/a/two-factor" element={<TwoFactor />} />
               <Route element={<AndroidLayout />}>
                 <Route path="/a/home" element={<AndroidHome />} />
+                <Route path="/a/bills" element={<Bills />} />
+                <Route path="/a/bills/:category" element={<BillPay />} />
+                <Route path="/a/history" element={<History />} />
+                <Route path="/a/referral" element={<Referral />} />
+                <Route path="/a/profile" element={<Profile />} />
+                <Route path="/a/notifications" element={<Notifications />} />
+                <Route path="/a/withdraw/:coinId" element={<Withdraw />} />
+                <Route path="/a/receive/:coinId" element={<Receive />} />
+                <Route path="/a/transaction/:txId" element={<TransactionDetail />} />
+                <Route path="/a/receipt/:txId" element={<Receipt />} />
+                <Route path="/a/bank-details" element={<BankDetails />} />
+                <Route path="/a/kyc" element={<KYC />} />
+                <Route path="/a/update-pin" element={<UpdatePin />} />
+                <Route path="/a/update-password" element={<UpdatePassword />} />
+                <Route path="/a/appearance" element={<Appearance />} />
+                <Route path="/a/support" element={<Support />} />
+                <Route path="/a/edit-profile" element={<EditProfile />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />

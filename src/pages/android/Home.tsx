@@ -11,14 +11,14 @@ import { useState } from "react";
 const ACCOUNT_NUMBER = "0765 6736 7282";
 
 const TILES = [
-  { label: "Airtime",     icon: Phone,     to: "/bills/airtime",     color: "#6366f1" },
-  { label: "Data",        icon: Wifi,      to: "/bills/data",        color: "#8b5cf6" },
-  { label: "Electricity", icon: Zap,       to: "/bills/electricity", color: "#f59e0b" },
-  { label: "TV",          icon: Tv,        to: "/bills/tv",          color: "#10b981" },
-  { label: "Betting",     icon: Dices,     to: "/bills/betting",     color: "#ef4444" },
-  { label: "Withdraw",    icon: ArrowUp,   to: "/withdraw/NGN",      color: "#6366f1" },
-  { label: "Deposit",     icon: ArrowDown, to: "/receive/NGN",       color: "#8b5cf6" },
-  { label: "History",     icon: Clock,     to: "/history",           color: "#64748b" },
+  { label: "Airtime",     icon: Phone,     to: "/a/bills/airtime",     color: "#6366f1" },
+  { label: "Data",        icon: Wifi,      to: "/a/bills/data",        color: "#8b5cf6" },
+  { label: "Electricity", icon: Zap,       to: "/a/bills/electricity", color: "#f59e0b" },
+  { label: "TV",          icon: Tv,        to: "/a/bills/tv",          color: "#10b981" },
+  { label: "Betting",     icon: Dices,     to: "/a/bills/betting",     color: "#ef4444" },
+  { label: "Withdraw",    icon: ArrowUp,   to: "/a/withdraw/NGN",      color: "#6366f1" },
+  { label: "Deposit",     icon: ArrowDown, to: "/a/receive/NGN",       color: "#8b5cf6" },
+  { label: "History",     icon: Clock,     to: "/a/history",           color: "#64748b" },
 ];
 
 export default function AndroidHome() {
@@ -126,7 +126,7 @@ export default function AndroidHome() {
               </div>
               <div className="px-3 pb-3 pt-1">
                 <button
-                  onClick={() => navigate(`/bills/${deal.category}`)}
+                  onClick={() => navigate(`/a/bills/${deal.category}`)}
                   className="w-full py-2 rounded-xl text-xs font-semibold text-white"
                   style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
                 >

@@ -54,24 +54,24 @@ const AppAndroid = () => (
               {/* Protected screens with Android layout */}
               <Route element={<AndroidLayout />}>
                 <Route path="/a/home" element={<AndroidHome />} />
-                <Route path="/bills" element={<Bills />} />
-                <Route path="/bills/:category" element={<BillPay />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/referral" element={<Referral />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/notifications" element={<Notifications />} />
-                <Route path="/withdraw/:coinId" element={<Withdraw />} />
-                <Route path="/receive/:coinId" element={<Receive />} />
-                <Route path="/transaction/:txId" element={<TransactionDetail />} />
-                <Route path="/receipt/:txId" element={<Receipt />} />
-                <Route path="/bank-details" element={<BankDetails />} />
-                <Route path="/kyc" element={<KYC />} />
-                <Route path="/update-pin" element={<UpdatePin />} />
-                <Route path="/update-password" element={<UpdatePassword />} />
+                <Route path="/a/bills" element={<Bills />} />
+                <Route path="/a/bills/:category" element={<BillPay />} />
+                <Route path="/a/history" element={<History />} />
+                <Route path="/a/referral" element={<Referral />} />
+                <Route path="/a/profile" element={<Profile />} />
+                <Route path="/a/notifications" element={<Notifications />} />
+                <Route path="/a/withdraw/:coinId" element={<Withdraw />} />
+                <Route path="/a/receive/:coinId" element={<Receive />} />
+                <Route path="/a/transaction/:txId" element={<TransactionDetail />} />
+                <Route path="/a/receipt/:txId" element={<Receipt />} />
+                <Route path="/a/bank-details" element={<BankDetails />} />
+                <Route path="/a/kyc" element={<KYC />} />
+                <Route path="/a/update-pin" element={<UpdatePin />} />
+                <Route path="/a/update-password" element={<UpdatePassword />} />
                 <Route path="/two-factor" element={<TwoFactor />} />
-                <Route path="/appearance" element={<Appearance />} />
-                <Route path="/support" element={<Support />} />
-                <Route path="/edit-profile" element={<EditProfile />} />
+                <Route path="/a/appearance" element={<Appearance />} />
+                <Route path="/a/support" element={<Support />} />
+                <Route path="/a/edit-profile" element={<EditProfile />} />
               </Route>
             </Routes>
           </AuthProvider>
