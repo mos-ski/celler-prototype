@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scope Control — Celler Documentation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --primary: #2563EB;
+  --primary-light: #DBEAFE;
+  --primary-dark: #1E40AF;
+  --success: #059669;
+  --success-light: #D1FAE5;
+  --warning: #D97706;
+  --warning-light: #FEF3C7;
+  --danger: #DC2626;
+  --danger-light: #FEE2E2;
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-700: #374151;
+  --gray-800: #1F2937;
+  --gray-900: #111827;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11pt;
+  line-height: 1.65;
+  color: var(--gray-800);
+  background: #fff;
+  padding: 0;
+}
+
+h1 {
+  font-size: 22pt;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid var(--primary);
+  letter-spacing: -0.5px;
+  page-break-after: avoid;
+}
+
+h2 {
+  font-size: 15pt;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-top: 26px;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--gray-200);
+  page-break-after: avoid;
+}
+
+h3 {
+  font-size: 12.5pt;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-top: 18px;
+  margin-bottom: 8px;
+  page-break-after: avoid;
+}
+
+h4 {
+  font-size: 11pt;
+  font-weight: 600;
+  color: var(--gray-600);
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+p { margin-bottom: 10px; color: var(--gray-700); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 16px 0;
+  font-size: 9.5pt;
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  overflow: hidden;
+  page-break-inside: avoid;
+}
+
+thead { background: var(--gray-50); }
+
+th {
+  font-weight: 600;
+  color: var(--gray-700);
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 2px solid var(--gray-200);
+  font-size: 9pt;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gray-100);
+  color: var(--gray-700);
+  vertical-align: top;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) { background: var(--gray-50); }
+
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 9pt;
+  background: var(--gray-100);
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: var(--primary-dark);
+}
+
+pre {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 10px 0 14px 0;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  line-height: 1.5;
+  color: var(--gray-700);
+  page-break-inside: avoid;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+ul, ol {
+  margin: 8px 0 10px 20px;
+  color: var(--gray-700);
+}
+
+li { margin-bottom: 3px; }
+
+strong { color: var(--gray-900); font-weight: 600; }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--gray-200);
+  margin: 22px 0;
+}
+
+blockquote {
+  border-left: 3px solid var(--primary);
+  padding: 8px 16px;
+  margin: 12px 0;
+  background: var(--primary-light);
+  border-radius: 0 6px 6px 0;
+  color: var(--gray-700);
+  font-size: 10pt;
+}
+
+a { color: var(--primary); text-decoration: none; }
+
+/* Status badges rendered as colored spans */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 8.5pt;
+  font-weight: 600;
+}
+
+@page {
+  size: A4;
+  margin: 18mm 16mm;
+}
+
+@media print {
+  body { font-size: 10pt; }
+  h1 { font-size: 20pt; }
+  h2 { font-size: 14pt; }
+}
+</style>
+</head>
+<body>
+<h1>Celler — Scope Control</h1>
+
+<strong>Date:</strong> April 3, 2026
+
+<hr>
+
+<h2>In Scope (Current Prototype)</h2>
+
+<table><thead><tr><th>Module</th><th>Features Included</th></tr></thead><tbody><tr><td><strong>Authentication</strong></td><td>Splash screen, welcome carousel, sign in, sign up (4-step), session persistence, logout</td></tr><tr><td><strong>Wallet & Dashboard</strong></td><td>Portfolio balance (USD/NGN), asset list, quick actions, promo banners, manage assets, coin detail</td></tr><tr><td><strong>Crypto Swap</strong></td><td>Coin selection, rate calculation, fee display, review, confirmation, success animation</td></tr><tr><td><strong>Withdrawal</strong></td><td>Amount entry (custom numpad), recipient selection (crypto/bank), review, FaceID/PIN auth, success</td></tr><tr><td><strong>Receive</strong></td><td>QR code display, address copy, NGN bank details</td></tr><tr><td><strong>Transaction History</strong></td><td>Transaction list, type/status filters, search, detail view, receipt generation</td></tr><tr><td><strong>Gift Card Trading</strong></td><td>Brand marketplace, sell flow (amount → upload → review → submit), order history</td></tr><tr><td><strong>Referral Program</strong></td><td>Referral code/link, earnings dashboard, withdrawal requests, weekly limit</td></tr><tr><td><strong>KYC Verification</strong></td><td>3-tier display, limits, submission UI</td></tr><tr><td><strong>Profile & Security</strong></td><td>Edit profile, password change, PIN update, 2FA setup, theme switching, bank management</td></tr><tr><td><strong>Notifications</strong></td><td>User notification list, admin push composer</td></tr><tr><td><strong>Admin Dashboard</strong></td><td>Overview stats, customer management, transaction monitoring, gift card approval, KYC approval, referral management, settings</td></tr></tbody></table>
+<hr>
+
+<h2>Out of Scope (Current Prototype)</h2>
+
+<table><thead><tr><th>Category</th><th>Items</th></tr></thead><tbody><tr><td><strong>Backend</strong></td><td>API server, database, microservices, job queues</td></tr><tr><td><strong>Real Auth</strong></td><td>JWT, OAuth, email verification, password reset, session management</td></tr><tr><td><strong>Blockchain</strong></td><td>Wallet address generation, real transactions, blockchain nodes, Web3 integration</td></tr><tr><td><strong>Payments</strong></td><td>Payment gateway (Paystack/Flutterwave), bank API integration, real NGN processing</td></tr><tr><td><strong>Communications</strong></td><td>Email service, SMS gateway, push notification delivery, live chat</td></tr><tr><td><strong>File Storage</strong></td><td>Document upload, image storage, CDN</td></tr><tr><td><strong>Security</strong></td><td>Rate limiting, CSRF protection, input sanitization, encryption, audit trails</td></tr><tr><td><strong>Advanced Trading</strong></td><td>Limit orders, stop-loss, DCA, staking, margin trading</td></tr><tr><td><strong>Mobile App</strong></td><td>Native iOS/Android app (React Native)</td></tr><tr><td><strong>Analytics</strong></td><td>User behavior tracking, funnel analysis, A/B testing</td></tr><tr><td><strong>Compliance</strong></td><td>AML reporting, regulatory compliance, tax reporting</td></tr><tr><td><strong>Internationalization</strong></td><td>Multi-language support, multi-currency beyond NGN</td></tr><tr><td><strong>Business Features</strong></td><td>White-label solution, B2B API, partner integrations</td></tr></tbody></table>
+<hr>
+
+<h2>Scope Boundary Rules</h2>
+
+<table><thead><tr><th>Rule</th><th>Description</th></tr></thead><tbody><tr><td><strong>Frontend Only</strong></td><td>This prototype is frontend-only. No backend work is in scope.</td></tr><tr><td><strong>Mock Data Only</strong></td><td>All data operations use localStorage. No external API calls.</td></tr><tr><td><strong>Nigerian Market Only</strong></td><td>NGN is the only fiat currency. No international expansion in scope.</td></tr><tr><td><strong>Prototype Purpose</strong></td><td>This is a design/UX validation tool, not a production-ready system.</td></tr><tr><td><strong>No Real Money</strong></td><td>No real cryptocurrency or fiat transactions occur.</td></tr><tr><td><strong>Single Admin Role</strong></td><td>Only one admin role exists. No RBAC in prototype.</td></tr></tbody></table>
+<hr>
+
+<h2>Scope Change Process</h2>
+
+<p>Any feature request that falls into "Out of Scope" must:</p>
+<li>Be documented with business justification</li>
+<li>Be assessed for effort and impact</li>
+<li>Be approved by product owner</li>
+<li>Be added to the roadmap (not the current sprint)</li>
+<li>Have clear acceptance criteria defined</li>
+
+</body>
+</html>
