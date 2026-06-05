@@ -9,6 +9,7 @@ import AndroidLayout from "@/components/android/AndroidLayout";
 
 import AndroidSplash from "./pages/android/Splash";
 import AndroidHome from "./pages/android/Home";
+import AndroidHistory from "./pages/android/History";
 
 import Welcome from "./pages/Welcome";
 import SignIn from "./pages/SignIn";
@@ -56,7 +57,7 @@ const AppAndroid = () => (
                 <Route path="/a/home" element={<AndroidHome />} />
                 <Route path="/a/bills" element={<Bills />} />
                 <Route path="/a/bills/:category" element={<BillPay />} />
-                <Route path="/a/history" element={<History />} />
+                <Route path="/a/history" element={<AndroidHistory />} />
                 <Route path="/a/referral" element={<Referral />} />
                 <Route path="/a/profile" element={<Profile />} />
                 <Route path="/a/notifications" element={<Notifications />} />
