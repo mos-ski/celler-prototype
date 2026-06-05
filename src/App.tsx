@@ -7,6 +7,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import AppLayout from "@/components/AppLayout";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import AndroidLayout from "@/components/android/AndroidLayout";
+import AndroidSplash from "./pages/android/Splash";
+import AndroidHome from "./pages/android/Home";
 import Splash from "./pages/Splash";
 import Welcome from "./pages/Welcome";
 import SignIn from "./pages/SignIn";
@@ -106,6 +109,16 @@ const App = () => (
                 <Route path="notifications" element={<AdminPushNotifications />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
+              {/* Android / Zella bill payment version */}
+              <Route path="/a" element={<AndroidSplash />} />
+              <Route path="/a/welcome" element={<Welcome />} />
+              <Route path="/a/signin" element={<SignIn />} />
+              <Route path="/a/signup" element={<SignUp />} />
+              <Route path="/a/two-factor" element={<TwoFactor />} />
+              <Route element={<AndroidLayout />}>
+                <Route path="/a/home" element={<AndroidHome />} />
+              </Route>
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
