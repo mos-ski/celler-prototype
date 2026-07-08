@@ -2,7 +2,7 @@ import { Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import BottomNav from "./BottomNav";
 
-export default function AndroidLayout() {
+export default function SellaLayout() {
   const { isLoggedIn } = useAuth();
 
   if (!isLoggedIn) return <Navigate to="/a/signin" replace />;

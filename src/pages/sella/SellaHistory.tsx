@@ -43,7 +43,7 @@ function TxEmoji({ tx }: { tx: Transaction }) {
   return <Clock size={18} className="text-muted-foreground" />;
 }
 
-export default function AndroidHistory() {
+export default function SellaHistory() {
   const navigate = useNavigate();
   const [typeFilter, setTypeFilter] = useState<TxType | "all">("all");
   const [statusFilter, setStatusFilter] = useState("all");

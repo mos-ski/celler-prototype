@@ -31,7 +31,7 @@ const TILES: TileConfig[] = [
 ];
 
 
-export default function AndroidHome() {
+export default function SellaHome() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [hidden, setHidden] = useState(false);
@@ -67,7 +67,7 @@ export default function AndroidHome() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-base">
-            {user?.fullName?.[0]?.toUpperCase() ?? "Z"}
+            {user?.fullName?.[0]?.toUpperCase() ?? "S"}
           </div>
           <span className="text-base font-semibold">Hello, {firstName}</span>
         </div>

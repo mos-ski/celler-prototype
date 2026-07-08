@@ -5,11 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import AndroidLayout from "@/components/android/AndroidLayout";
+import SellaLayout from "@/components/sella/SellaLayout";
 
-import AndroidSplash from "./pages/android/Splash";
-import AndroidHome from "./pages/android/Home";
-import AndroidHistory from "./pages/android/History";
+import SellaSplash from "./pages/sella/SellaSplash";
+import SellaHome from "./pages/sella/SellaHome";
+import SellaHistory from "./pages/sella/SellaHistory";
+import SellaLanding from "./pages/sella/Landing";
 
 import Welcome from "./pages/Welcome";
 import SignIn from "./pages/SignIn";
@@ -35,7 +36,7 @@ import EditProfile from "./pages/EditProfile";
 
 const queryClient = new QueryClient();
 
-const AppAndroid = () => (
+const AppSella = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <ThemeProvider>
@@ -44,20 +45,20 @@ const AppAndroid = () => (
         <BrowserRouter>
           <AuthProvider>
             <Routes>
-              {/* Android splash and auth */}
-              <Route path="/" element={<AndroidSplash />} />
-              <Route path="/a" element={<AndroidSplash />} />
+              {/* Sella splash and auth */}
+              <Route path="/" element={<SellaLanding />} />
+              <Route path="/a" element={<SellaSplash />} />
               <Route path="/a/welcome" element={<Welcome />} />
               <Route path="/a/signin" element={<SignIn />} />
               <Route path="/a/signup" element={<SignUp />} />
               <Route path="/a/two-factor" element={<TwoFactor />} />
 
-              {/* Protected screens with Android layout */}
-              <Route element={<AndroidLayout />}>
-                <Route path="/a/home" element={<AndroidHome />} />
+              {/* Protected screens with Sella layout */}
+              <Route element={<SellaLayout />}>
+                <Route path="/a/home" element={<SellaHome />} />
                 <Route path="/a/bills" element={<Bills />} />
                 <Route path="/a/bills/:category" element={<BillPay />} />
-                <Route path="/a/history" element={<AndroidHistory />} />
+                <Route path="/a/history" element={<SellaHistory />} />
                 <Route path="/a/referral" element={<Referral />} />
                 <Route path="/a/profile" element={<Profile />} />
                 <Route path="/a/notifications" element={<Notifications />} />
@@ -82,4 +83,4 @@ const AppAndroid = () => (
   </QueryClientProvider>
 );
 
-export default AppAndroid;
+export default AppSella;

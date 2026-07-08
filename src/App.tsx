@@ -7,10 +7,11 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import AppLayout from "@/components/AppLayout";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import AndroidLayout from "@/components/android/AndroidLayout";
-import AndroidSplash from "./pages/android/Splash";
-import AndroidHome from "./pages/android/Home";
-import AndroidHistory from "./pages/android/History";
+import SellaLayout from "@/components/sella/SellaLayout";
+import SellaSplash from "./pages/sella/SellaSplash";
+import SellaHome from "./pages/sella/SellaHome";
+import SellaHistory from "./pages/sella/SellaHistory";
+import SellaLanding from "./pages/sella/Landing";
 import Splash from "./pages/Splash";
 import Welcome from "./pages/Welcome";
 import SignIn from "./pages/SignIn";
@@ -110,17 +111,18 @@ const App = () => (
                 <Route path="notifications" element={<AdminPushNotifications />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>
-              {/* Android / Zella bill payment version — all routes prefixed /a/* */}
-              <Route path="/a" element={<AndroidSplash />} />
+              {/* Sella bill payment version — all routes prefixed /a/* */}
+              <Route path="/sella" element={<SellaLanding />} />
+              <Route path="/a" element={<SellaSplash />} />
               <Route path="/a/welcome" element={<Welcome />} />
               <Route path="/a/signin" element={<SignIn />} />
               <Route path="/a/signup" element={<SignUp />} />
               <Route path="/a/two-factor" element={<TwoFactor />} />
-              <Route element={<AndroidLayout />}>
-                <Route path="/a/home" element={<AndroidHome />} />
+              <Route element={<SellaLayout />}>
+                <Route path="/a/home" element={<SellaHome />} />
                 <Route path="/a/bills" element={<Bills />} />
                 <Route path="/a/bills/:category" element={<BillPay />} />
-                <Route path="/a/history" element={<AndroidHistory />} />
+                <Route path="/a/history" element={<SellaHistory />} />
                 <Route path="/a/referral" element={<Referral />} />
                 <Route path="/a/profile" element={<Profile />} />
                 <Route path="/a/notifications" element={<Notifications />} />
