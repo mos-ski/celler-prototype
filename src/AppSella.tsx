@@ -7,32 +7,30 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import SellaLayout from "@/components/sella/SellaLayout";
 
-import SellaSplash from "./pages/sella/SellaSplash";
-import SellaHome from "./pages/sella/SellaHome";
-import SellaHistory from "./pages/sella/SellaHistory";
 import SellaLanding from "./pages/sella/Landing";
-
-import Welcome from "./pages/Welcome";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import TwoFactor from "./pages/TwoFactor";
-import Bills from "./pages/Bills";
-import BillPay from "./pages/BillPay";
-import History from "./pages/History";
-import Referral from "./pages/Referral";
-import Profile from "./pages/Profile";
-import Notifications from "./pages/Notifications";
-import Withdraw from "./pages/Withdraw";
-import Receive from "./pages/Receive";
-import TransactionDetail from "./pages/TransactionDetail";
-import Receipt from "./pages/Receipt";
-import BankDetails from "./pages/BankDetails";
-import KYC from "./pages/KYC";
-import UpdatePin from "./pages/UpdatePin";
-import UpdatePassword from "./pages/UpdatePassword";
-import Appearance from "./pages/Appearance";
-import Support from "./pages/Support";
-import EditProfile from "./pages/EditProfile";
+import SellaSplash from "./pages/sella/SellaSplash";
+import SellaWelcome from "./pages/sella/SellaWelcome";
+import SellaSignIn from "./pages/sella/SellaSignIn";
+import SellaSignUp from "./pages/sella/SellaSignUp";
+import SellaTwoFactor from "./pages/sella/SellaTwoFactor";
+import SellaHome from "./pages/sella/SellaHome";
+import SellaBills from "./pages/Bills";
+import SellaBillPay from "./pages/sella/SellaBillPay";
+import SellaHistory from "./pages/sella/SellaHistory";
+import SellaReferral from "./pages/sella/SellaReferral";
+import SellaProfile from "./pages/sella/SellaProfile";
+import SellaNotifications from "./pages/sella/SellaNotifications";
+import SellaWithdraw from "./pages/sella/SellaWithdraw";
+import SellaReceive from "./pages/sella/SellaReceive";
+import SellaTransactionDetail from "./pages/sella/SellaTransactionDetail";
+import SellaReceipt from "./pages/sella/SellaReceipt";
+import SellaBankDetails from "./pages/sella/SellaBankDetails";
+import SellaKYC from "./pages/sella/SellaKYC";
+import SellaUpdatePin from "./pages/sella/SellaUpdatePin";
+import SellaUpdatePassword from "./pages/sella/SellaUpdatePassword";
+import SellaAppearance from "./pages/sella/SellaAppearance";
+import SellaSupport from "./pages/sella/SellaSupport";
+import SellaEditProfile from "./pages/sella/SellaEditProfile";
 
 const queryClient = new QueryClient();
 
@@ -45,35 +43,32 @@ const AppSella = () => (
         <BrowserRouter>
           <AuthProvider>
             <Routes>
-              {/* Sella splash and auth */}
               <Route path="/" element={<SellaLanding />} />
               <Route path="/a" element={<SellaSplash />} />
-              <Route path="/a/welcome" element={<Welcome />} />
-              <Route path="/a/signin" element={<SignIn />} />
-              <Route path="/a/signup" element={<SignUp />} />
-              <Route path="/a/two-factor" element={<TwoFactor />} />
+              <Route path="/a/welcome" element={<SellaWelcome />} />
+              <Route path="/a/signin" element={<SellaSignIn />} />
+              <Route path="/a/signup" element={<SellaSignUp />} />
+              <Route path="/a/two-factor" element={<SellaTwoFactor />} />
 
-              {/* Protected screens with Sella layout */}
               <Route element={<SellaLayout />}>
                 <Route path="/a/home" element={<SellaHome />} />
-                <Route path="/a/bills" element={<Bills />} />
-                <Route path="/a/bills/:category" element={<BillPay />} />
+                <Route path="/a/bills" element={<SellaBills />} />
+                <Route path="/a/bills/:category" element={<SellaBillPay />} />
                 <Route path="/a/history" element={<SellaHistory />} />
-                <Route path="/a/referral" element={<Referral />} />
-                <Route path="/a/profile" element={<Profile />} />
-                <Route path="/a/notifications" element={<Notifications />} />
-                <Route path="/a/withdraw/:coinId" element={<Withdraw />} />
-                <Route path="/a/receive/:coinId" element={<Receive />} />
-                <Route path="/a/transaction/:txId" element={<TransactionDetail />} />
-                <Route path="/a/receipt/:txId" element={<Receipt />} />
-                <Route path="/a/bank-details" element={<BankDetails />} />
-                <Route path="/a/kyc" element={<KYC />} />
-                <Route path="/a/update-pin" element={<UpdatePin />} />
-                <Route path="/a/update-password" element={<UpdatePassword />} />
-                <Route path="/two-factor" element={<TwoFactor />} />
-                <Route path="/a/appearance" element={<Appearance />} />
-                <Route path="/a/support" element={<Support />} />
-                <Route path="/a/edit-profile" element={<EditProfile />} />
+                <Route path="/a/referral" element={<SellaReferral />} />
+                <Route path="/a/profile" element={<SellaProfile />} />
+                <Route path="/a/notifications" element={<SellaNotifications />} />
+                <Route path="/a/withdraw/:coinId" element={<SellaWithdraw />} />
+                <Route path="/a/receive/:coinId" element={<SellaReceive />} />
+                <Route path="/a/transaction/:txId" element={<SellaTransactionDetail />} />
+                <Route path="/a/receipt/:txId" element={<SellaReceipt />} />
+                <Route path="/a/bank-details" element={<SellaBankDetails />} />
+                <Route path="/a/kyc" element={<SellaKYC />} />
+                <Route path="/a/update-pin" element={<SellaUpdatePin />} />
+                <Route path="/a/update-password" element={<SellaUpdatePassword />} />
+                <Route path="/a/appearance" element={<SellaAppearance />} />
+                <Route path="/a/support" element={<SellaSupport />} />
+                <Route path="/a/edit-profile" element={<SellaEditProfile />} />
               </Route>
             </Routes>
           </AuthProvider>
